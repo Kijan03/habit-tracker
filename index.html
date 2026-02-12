@@ -76,14 +76,19 @@
 
         </main>
         
-        <!-- 6. 테마 변경 -->
-        <div class="card shadow-lg rounded-2xl p-4 mt-6">
-            <h3 class="font-bold text-center mb-3 text-main">테마 색상 변경</h3>
-            <div id="theme-switcher" class="flex justify-center gap-3">
-                <button data-color="#f0f2f5" class="w-8 h-8 rounded-full bg-[#f0f2f5] border-2 border-gray-300"></button>
-                <button data-color="#1f2937" class="w-8 h-8 rounded-full bg-[#1f2937] border-2"></button>
-                <button data-color="#fefce8" class="w-8 h-8 rounded-full bg-[#fefce8] border-2"></button>
-                <button data-color="#e0e7ff" class="w-8 h-8 rounded-full bg-[#e0e7ff] border-2"></button>
+        <!-- 6. 테마 변경 & 도움말 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <div class="card shadow-lg rounded-2xl p-4">
+                <h3 class="font-bold text-center mb-3 text-main">테마 색상 변경</h3>
+                <div id="theme-switcher" class="flex justify-center gap-3">
+                    <button data-color="#f0f2f5" class="w-8 h-8 rounded-full bg-[#f0f2f5] border-2 border-gray-300"></button>
+                    <button data-color="#1f2937" class="w-8 h-8 rounded-full bg-[#1f2937] border-2"></button>
+                    <button data-color="#fefce8" class="w-8 h-8 rounded-full bg-[#fefce8] border-2"></button>
+                    <button data-color="#e0e7ff" class="w-8 h-8 rounded-full bg-[#e0e7ff] border-2"></button>
+                </div>
+            </div>
+            <div class="card shadow-lg rounded-2xl p-4 flex items-center justify-center">
+                 <button id="how-to-use-btn" class="button-accent text-white font-bold py-3 px-6 rounded-lg w-full">💡 사용 방법 보기</button>
             </div>
         </div>
 
@@ -101,6 +106,21 @@
     <!-- 8. 하단 광고 영역 -->
     <div class="w-full bg-gray-200 text-center py-4 text-gray-500 text-sm mt-8">광고가 들어갈 영역</div>
 
+    <!-- 도움말 모달 -->
+    <div id="how-to-use-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center p-4">
+        <div class="card rounded-2xl shadow-xl max-w-lg w-full p-6 relative">
+            <button id="modal-close-btn" class="absolute top-4 right-4 text-2xl font-bold text-secondary hover:text-main">&times;</button>
+            <h2 class="text-2xl font-bold text-center mb-4 text-main">해빗 트래커 사용 방법</h2>
+            <div class="text-secondary space-y-3">
+                <p><strong>✅ 습관 추가:</strong> 상단의 입력창에 새로운 습관을 입력하고 '추가' 버튼을 누르세요.</p>
+                <p><strong>👆 습관 완료:</strong> 습관 목록의 체크박스를 클릭하여 완료 상태로 변경할 수 있습니다. 한 번 더 클릭하면 미완료 상태로 돌아갑니다.</p>
+                <p><strong>🔥 연속 달성 (Streak):</strong> 습관을 연속으로 완료하면 불꽃 아이콘과 함께 숫자가 올라갑니다. 하루라도 놓치면 초기화되니 꾸준히 도전해보세요!</p>
+                <p><strong>❌ 습관 삭제:</strong> 각 습관 항목의 오른쪽에 있는 '×' 버튼을 눌러 습관을 삭제할 수 있습니다.</p>
+                <p><strong>🎨 테마 변경:</strong> 하단의 색상 팔레트 버튼을 클릭하여 원하는 테마로 변경할 수 있습니다. 당신만의 공간을 만들어보세요.</p>
+            </div>
+        </div>
+    </div>
+
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -113,7 +133,10 @@
             habitForm: document.getElementById('habit-form'),
             habitInput: document.getElementById('habit-input'),
             habitList: document.getElementById('habit-list'),
-            themeSwitcher: document.getElementById('theme-switcher')
+            themeSwitcher: document.getElementById('theme-switcher'),
+            howToUseBtn: document.getElementById('how-to-use-btn'),
+            howToUseModal: document.getElementById('how-to-use-modal'),
+            modalCloseBtn: document.getElementById('modal-close-btn')
         };
 
         const STORAGE_KEY_HABITS = 'habitsDataV3';
@@ -191,6 +214,16 @@
             elements.date.textContent = today.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
             elements.quote.textContent = quotes[Math.floor(Math.random() * quotes.length)];
         }
+        
+        // --- 모달 로직 ---
+        const openModal = () => {
+            elements.howToUseModal.classList.remove('hidden');
+            elements.howToUseModal.classList.add('flex');
+        };
+        const closeModal = () => {
+            elements.howToUseModal.classList.add('hidden');
+            elements.howToUseModal.classList.remove('flex');
+        };
 
         // --- 핵심 로직 ---
         const addHabit = (name) => {
@@ -258,6 +291,18 @@
                 saveTheme(color);
             }
         });
+        
+        elements.howToUseBtn.addEventListener('click', openModal);
+        elements.modalCloseBtn.addEventListener('click', closeModal);
+        elements.howToUseModal.addEventListener('click', (e) => {
+            if(e.target === elements.howToUseModal) closeModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !elements.howToUseModal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+
 
         // --- 초기화 ---
         function init() {
