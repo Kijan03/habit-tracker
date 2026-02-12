@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker - 당신의 성장을 응원합니다</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Tailwind CSS JIT 컴파일러가 동적 클래스를 인식하도록 돕는 기본 스타일 */
+        body {
+            background-color: var(--bg-color, #f0f2f5);
+            transition: background-color 0.3s ease;
+        }
+        .card {
+            background-color: var(--card-bg-color, #ffffff);
+        }
+        .text-main {
+            color: var(--text-color, #1f2937);
+        }
+        .text-secondary {
+            color: var(--text-secondary-color, #6b7280);
+        }
+        .progress-bar-bg {
+            background-color: var(--progress-bg-color, #e5e7eb);
+        }
+        .progress-bar-fill {
+            background-color: var(--accent-color, #34d399);
+        }
+        .button-accent {
+             background-color: var(--accent-color, #34d399);
+        }
+        .button-accent:hover {
+            background-color: var(--accent-hover-color, #10b981);
+        }
+        .streak-text {
+            color: var(--streak-color, #f59e0b);
+        }
+    </style>
+</head>
+<body class="text-main">
+
+    <!-- 1. 상단 광고 영역 -->
+    <div class="w-full bg-gray-200 text-center py-4 text-gray-500 text-sm">광고가 들어갈 영역</div>
+
+    <div class="container mx-auto max-w-2xl p-4 md:p-6">
+        
+        <!-- 2. 헤더: 날짜와 응원 문구 -->
+        <header class="text-center mb-8">
+            <h1 id="today-date" class="text-xl font-semibold text-secondary"></h1>
+            <p id="motivational-quote" class="text-2xl md:text-3xl font-bold mt-2 text-main"></p>
+        </header>
+
+        <main class="card shadow-lg rounded-2xl p-6 space-y-6">
+
+            <!-- 3. 전체 달성률 프로그레스 바 -->
+            <div class="progress-section">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-sm font-medium text-secondary">오늘의 달성률</span>
+                    <span id="progress-percentage" class="text-sm font-medium text-main">0%</span>
+                </div>
+                <div class="w-full progress-bar-bg rounded-full h-2.5">
+                    <div id="progress-bar" class="progress-bar-fill h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- 4. 습관 추가 폼 -->
+            <form id="habit-form" class="flex gap-3">
+                <input type="text" id="habit-input" placeholder="새로운 습관 추가..." class="flex-grow bg-gray-100 border-2 border-transparent rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent text-main">
+                <button type="submit" class="button-accent text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105">추가</button>
+            </form>
+
+            <!-- 5. 습관 목록 -->
+            <ul id="habit-list" class="space-y-3">
+                <!-- JS로 동적 생성 -->
+            </ul>
+
+        </main>
+        
+        <!-- 6. 테마 변경 -->
+        <div class="card shadow-lg rounded-2xl p-4 mt-6">
+            <h3 class="font-bold text-center mb-3 text-main">테마 색상 변경</h3>
+            <div id="theme-switcher" class="flex justify-center gap-3">
+                <button data-color="#f0f2f5" class="w-8 h-8 rounded-full bg-[#f0f2f5] border-2 border-gray-300"></button>
+                <button data-color="#1f2937" class="w-8 h-8 rounded-full bg-[#1f2937] border-2"></button>
+                <button data-color="#fefce8" class="w-8 h-8 rounded-full bg-[#fefce8] border-2"></button>
+                <button data-color="#e0e7ff" class="w-8 h-8 rounded-full bg-[#e0e7ff] border-2"></button>
+            </div>
+        </div>
+
+        <!-- 7. 습관 형성 팁 -->
+        <section class="card shadow-lg rounded-2xl p-6 mt-6">
+            <h2 class="text-xl font-bold text-center mb-4 text-main">습관 형성에 도움되는 팁</h2>
+            <div class="text-secondary space-y-2">
+                <p><strong>작게 시작하세요:</strong> 처음부터 너무 큰 목표를 세우지 마세요. '매일 1시간 운동'이 아닌 '매일 10분 산책'으로 시작하는 것이 꾸준함을 유지하는 비결입니다.</p>
+                <p><strong>기존 습관에 붙이세요:</strong> 새로운 습관을 이미 가지고 있는 습관 뒤에 붙여보세요. 예를 들어 '양치 후 바로 명상하기'처럼 연결하면 잊지 않고 실천하기 쉽습니다.</p>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- 8. 하단 광고 영역 -->
+    <div class="w-full bg-gray-200 text-center py-4 text-gray-500 text-sm mt-8">광고가 들어갈 영역</div>
+
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // DOM 요소
+        const elements = {
+            date: document.getElementById('today-date'),
+            quote: document.getElementById('motivational-quote'),
+            progressText: document.getElementById('progress-percentage'),
+            progressBar: document.getElementById('progress-bar'),
+            habitForm: document.getElementById('habit-form'),
+            habitInput: document.getElementById('habit-input'),
+            habitList: document.getElementById('habit-list'),
+            themeSwitcher: document.getElementById('theme-switcher')
+        };
+
+        const STORAGE_KEY_HABITS = 'habitsDataV3';
+        const STORAGE_KEY_THEME = 'themeColorV1';
+        
+        let state = {
+            habits: [],
+            lastVisitDate: getISODateString(new Date())
+        };
+
+        const quotes = [
+            "성공의 비결은 시작하는 것이다.", "오늘의 작은 실천이 내일의 큰 변화를 만든다.", "어제보다 나은 오늘을 만들자.", "꾸준함이 비범함을 만든다.", "가장 큰 위험은 아무 위험도 감수하지 않는 것이다."
+        ];
+
+        // --- 유틸리티 함수 ---
+        function getISODateString(date) {
+            return date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+        }
+
+        // --- 상태 관리 ---
+        const saveState = () => localStorage.setItem(STORAGE_KEY_HABITS, JSON.stringify(state));
+        const loadState = () => JSON.parse(localStorage.getItem(STORAGE_KEY_HABITS));
+        const saveTheme = (color) => localStorage.setItem(STORAGE_KEY_THEME, color);
+        const loadTheme = () => localStorage.getItem(STORAGE_KEY_THEME);
+
+        // --- 렌더링 및 UI 업데이트 ---
+        function applyTheme(color) {
+            const isDark = (color === '#1f2937');
+            document.documentElement.style.setProperty('--bg-color', color);
+            document.documentElement.style.setProperty('--card-bg-color', isDark ? '#2d3748' : '#ffffff');
+            document.documentElement.style.setProperty('--text-color', isDark ? '#e2e8f0' : '#1f2937');
+            document.documentElement.style.setProperty('--text-secondary-color', isDark ? '#a0aec0' : '#6b7280');
+            document.documentElement.style.setProperty('--progress-bg-color', isDark ? '#4a5568' : '#e5e7eb');
+        }
+
+        const updateProgressBar = () => {
+            const total = state.habits.length;
+            const completed = state.habits.filter(h => h.completed).length;
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+            elements.progressBar.style.width = `${percentage}%`;
+            elements.progressText.textContent = `${percentage}%`;
+        };
+        
+        const renderHabits = () => {
+            elements.habitList.innerHTML = '';
+            if (state.habits.length === 0) {
+                elements.habitList.innerHTML = `<p class="text-center text-secondary">아직 등록된 습관이 없습니다. 첫 습관을 추가해보세요!</p>`;
+            } else {
+                state.habits.forEach((habit, index) => {
+                    const isCompleted = habit.completed;
+                    const li = document.createElement('li');
+                    li.className = `habit-item flex items-center p-4 rounded-lg transition-all ${isCompleted ? 'bg-green-100' : 'bg-gray-50'}`;
+                    li.innerHTML = `
+                        <div class="flex-grow flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" ${isCompleted ? 'checked' : ''} class="w-6 h-6 rounded-md border-2 border-gray-300 text-green-500 focus:ring-0">
+                            <span class="flex-grow ${isCompleted ? 'line-through text-gray-400' : 'text-main'}">${habit.name}</span>
+                        </div>
+                        <span class="streak-text font-bold text-sm mx-4">${habit.streak > 0 ? `🔥 ${habit.streak}` : ''}</span>
+                        <button class="delete-btn text-gray-400 hover:text-red-500 text-lg">&times;</button>
+                    `;
+                    
+                    li.querySelector('input[type="checkbox"]').addEventListener('change', () => toggleHabit(index));
+                    li.querySelector('.delete-btn').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        deleteHabit(index);
+                    });
+                    elements.habitList.appendChild(li);
+                });
+            }
+            updateProgressBar();
+        };
+
+        function displayHeaderInfo() {
+            const today = new Date();
+            elements.date.textContent = today.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+            elements.quote.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+        }
+
+        // --- 핵심 로직 ---
+        const addHabit = (name) => {
+            if (name.trim() === '') return;
+            state.habits.push({ name: name.trim(), completed: false, streak: 0, lastCompletedDate: null });
+            saveState();
+            renderHabits();
+        };
+
+        const toggleHabit = (index) => {
+            const habit = state.habits[index];
+            const today = getISODateString(new Date());
+            const yesterday = getISODateString(new Date(Date.now() - 86400000));
+            habit.completed = !habit.completed;
+            if (habit.completed) {
+                habit.streak = habit.lastCompletedDate === yesterday ? habit.streak + 1 : 1;
+                habit.lastCompletedDate = today;
+            } else {
+                if (habit.lastCompletedDate === today) {
+                    habit.streak--;
+                    habit.lastCompletedDate = habit.streak > 0 ? yesterday : null;
+                }
+            }
+            saveState();
+            renderHabits();
+        };
+
+        const deleteHabit = (index) => {
+            state.habits.splice(index, 1);
+            saveState();
+            renderHabits();
+        };
+
+        const initializeState = () => {
+            const loaded = loadState();
+            const today = getISODateString(new Date());
+            const yesterday = getISODateString(new Date(Date.now() - 86400000));
+            
+            if (loaded) {
+                state = loaded;
+                if (state.lastVisitDate !== today) {
+                    state.habits.forEach(habit => {
+                        if (habit.lastCompletedDate !== yesterday) {
+                            habit.streak = 0;
+                        }
+                        habit.completed = false;
+                    });
+                    state.lastVisitDate = today;
+                }
+            }
+            saveState();
+        };
+
+        // --- 이벤트 리스너 ---
+        elements.habitForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            addHabit(elements.habitInput.value);
+            elements.habitInput.value = '';
+        });
+
+        elements.themeSwitcher.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                const color = e.target.dataset.color;
+                applyTheme(color);
+                saveTheme(color);
+            }
+        });
+
+        // --- 초기화 ---
+        function init() {
+            const savedTheme = loadTheme();
+            if (savedTheme) {
+                applyTheme(savedTheme);
+            } else {
+                applyTheme('#f0f2f5'); // 기본 테마
+            }
+            displayHeaderInfo();
+            initializeState();
+            renderHabits();
+        }
+
+        init();
+    });
+    </script>
+</body>
+</html>
