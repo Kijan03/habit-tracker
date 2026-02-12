@@ -11,6 +11,7 @@
         body {
             background-color: var(--bg-color, #f0f2f5);
             transition: background-color 0.3s ease;
+            overflow-x: hidden; /* 콘페티가 가로 스크롤을 유발하지 않도록 */
         }
         .card {
             background-color: var(--card-bg-color, #ffffff);
@@ -38,6 +39,20 @@
         }
         section {
             margin-top: 2.5rem;
+        }
+        .confetti {
+            width: 10px;
+            height: 10px;
+            position: fixed;
+            top: -10px;
+            animation: fall 5s linear forwards;
+            pointer-events: none;
+        }
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
         }
     </style>
 </head>
@@ -154,10 +169,10 @@
         <p class="text-xs text-gray-400">&copy; 2024 Habit Tracker. All Rights Reserved.</p>
     </footer>
 
-    <!-- 도움말 모달 -->
+    <!-- 모달 영역 -->
     <div id="how-to-use-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center p-4 z-50">
         <div class="card rounded-2xl shadow-xl max-w-lg w-full p-6 relative">
-            <button id="modal-close-btn" class="absolute top-4 right-4 text-2xl font-bold text-secondary hover:text-main">&times;</button>
+            <button class="modal-close-btn absolute top-4 right-4 text-2xl font-bold text-secondary hover:text-main">&times;</button>
             <h2 class="text-2xl font-bold text-center mb-4 text-main">해빗 트래커 사용 방법</h2>
             <div class="text-secondary space-y-3">
                 <p><strong>✅ 습관 추가:</strong> 상단의 입력창에 새로운 습관을 입력하고 '추가' 버튼을 누르세요.</p>
@@ -165,6 +180,18 @@
                 <p><strong>🔥 연속 달성 (Streak):</strong> 습관을 연속으로 완료하면 불꽃 아이콘과 함께 숫자가 올라갑니다. 하루라도 놓치면 초기화되니 꾸준히 도전해보세요!</p>
                 <p><strong>❌ 습관 삭제:</strong> 각 습관 항목의 오른쪽에 있는 '×' 버튼을 눌러 습관을 삭제할 수 있습니다.</p>
                 <p><strong>🎨 테마 변경:</strong> 하단의 색상 팔레트 버튼을 클릭하여 원하는 테마로 변경할 수 있습니다. 당신만의 공간을 만들어보세요.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="celebration-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center p-4 z-50">
+        <div class="card rounded-2xl shadow-xl max-w-lg w-full p-8 relative text-center">
+            <button class="modal-close-btn absolute top-4 right-4 text-2xl font-bold text-secondary hover:text-main">&times;</button>
+            <h2 class="text-3xl font-bold text-main mb-2">🎉 축하합니다! 🎉</h2>
+            <p id="celebration-text" class="text-lg text-secondary mb-6"></p>
+            <div class="flex gap-4">
+                <button id="share-btn" class="flex-1 bg-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-600">자랑하기</button>
+                <button id="copy-btn" class="flex-1 bg-gray-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-600">내용 복사</button>
             </div>
         </div>
     </div>
@@ -184,11 +211,16 @@
             themeSwitcher: document.getElementById('theme-switcher'),
             howToUseBtn: document.getElementById('how-to-use-btn'),
             howToUseModal: document.getElementById('how-to-use-modal'),
-            modalCloseBtn: document.getElementById('modal-close-btn')
+            celebrationModal: document.getElementById('celebration-modal'),
+            celebrationText: document.getElementById('celebration-text'),
+            shareBtn: document.getElementById('share-btn'),
+            copyBtn: document.getElementById('copy-btn'),
+            modalCloseBtns: document.querySelectorAll('.modal-close-btn')
         };
 
-        const STORAGE_KEY_HABITS = 'habitsDataV3';
+        const STORAGE_KEY_HABITS = 'habitsDataV4'; // 버전 업데이트
         const STORAGE_KEY_THEME = 'themeColorV1';
+        const MILESTONES = [3, 7, 14, 30, 50, 100];
         
         let state = {
             habits: [],
@@ -264,14 +296,33 @@
         }
         
         // --- 모달 로직 ---
-        const openModal = () => {
-            elements.howToUseModal.classList.remove('hidden');
-            elements.howToUseModal.classList.add('flex');
+        const openModal = (modal) => {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         };
-        const closeModal = () => {
-            elements.howToUseModal.classList.add('hidden');
-            elements.howToUseModal.classList.remove('flex');
+        const closeModal = (modal) => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         };
+        
+        // --- 축하 로직 ---
+        function runConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 5000);
+            }
+        }
+        
+        function showCelebration(habit) {
+            elements.celebrationText.textContent = `'${habit.name}' 습관을 ${habit.streak}일 연속으로 달성하셨어요!`;
+            openModal(elements.celebrationModal);
+            runConfetti();
+        }
 
         // --- 핵심 로직 ---
         const addHabit = (name) => {
@@ -286,9 +337,16 @@
             const today = getISODateString(new Date());
             const yesterday = getISODateString(new Date(Date.now() - 86400000));
             habit.completed = !habit.completed;
+
             if (habit.completed) {
+                const previousStreak = habit.streak;
                 habit.streak = habit.lastCompletedDate === yesterday ? habit.streak + 1 : 1;
                 habit.lastCompletedDate = today;
+
+                // 축하 이벤트 체크
+                if (MILESTONES.includes(habit.streak) && habit.streak > previousStreak) {
+                    showCelebration(habit);
+                }
             } else {
                 if (habit.lastCompletedDate === today) {
                     habit.streak--;
@@ -314,7 +372,9 @@
                 state = loaded;
                 if (state.lastVisitDate !== today) {
                     state.habits.forEach(habit => {
-                        if (habit.lastCompletedDate !== yesterday) {
+                        if (habit.completed && habit.lastCompletedDate !== today) {
+                             // 이전 방문 시 체크된 항목 처리
+                        } else if (!habit.completed && habit.lastCompletedDate !== yesterday) {
                             habit.streak = 0;
                         }
                         habit.completed = false;
@@ -340,15 +400,46 @@
             }
         });
         
-        elements.howToUseBtn.addEventListener('click', openModal);
-        elements.modalCloseBtn.addEventListener('click', closeModal);
-        elements.howToUseModal.addEventListener('click', (e) => {
-            if(e.target === elements.howToUseModal) closeModal();
+        elements.howToUseBtn.addEventListener('click', () => openModal(elements.howToUseModal));
+        
+        elements.modalCloseBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                closeModal(elements.howToUseModal);
+                closeModal(elements.celebrationModal);
+            });
         });
+
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !elements.howToUseModal.classList.contains('hidden')) {
-                closeModal();
+            if (e.key === 'Escape') {
+                closeModal(elements.howToUseModal);
+                closeModal(elements.celebrationModal);
             }
+        });
+        
+        // 공유 및 복사 버튼 이벤트
+        const getShareText = () => `🎉 '${state.habits.find(h => MILESTONES.includes(h.streak))?.name}' 습관을 ${state.habits.find(h => MILESTONES.includes(h.streak))?.streak}일 연속으로 달성했습니다! #해빗트래커`;
+
+        elements.shareBtn.addEventListener('click', () => {
+            const shareText = getShareText();
+            if (navigator.share) {
+                navigator.share({
+                    title: '습관 달성!',
+                    text: shareText,
+                }).catch(console.error);
+            } else {
+                alert("이 브라우저에서는 공유하기가 지원되지 않습니다. '내용 복사'를 이용해주세요.");
+            }
+        });
+
+        elements.copyBtn.addEventListener('click', () => {
+            const shareText = getShareText();
+            navigator.clipboard.writeText(shareText).then(() => {
+                const originalText = elements.copyBtn.textContent;
+                elements.copyBtn.textContent = '복사 완료!';
+                setTimeout(() => {
+                    elements.copyBtn.textContent = originalText;
+                }, 2000);
+            });
         });
 
         // --- 초기화 ---
@@ -369,3 +460,4 @@
     </script>
 </body>
 </html>
+
