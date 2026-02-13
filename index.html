@@ -63,9 +63,24 @@
             display: none;
             z-index: 50;
         }
+        .confetti {
+            width: 10px;
+            height: 10px;
+            position: fixed;
+            top: -10px;
+            animation: fall 5s linear forwards;
+            pointer-events: none;
+            z-index: 100;
+        }
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
-<body class="text-main min-h-screen flex flex-col">
+<body class="text-main min-h-screen flex flex-col overflow-x-hidden">
 
     <!-- 상단 내비게이션 -->
     <nav class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200">
@@ -234,7 +249,7 @@
     <!-- 맨 위로 가기 버튼 -->
     <button id="back-to-top" class="back-to-top bg-green-600 text-white p-3 rounded-full shadow-2xl hover:bg-green-700 transition-all transform hover:scale-110">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="Wait 5M5 10l7-7m0 0l7 7m-7-7v18" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
         </svg>
     </button>
 
@@ -540,7 +555,7 @@
                 }
             } else {
                 if (habit.lastCompletedDate === today) {
-                    habit.streak--;
+                    habit.streak = Math.max(0, habit.streak - 1);
                     habit.lastCompletedDate = habit.streak > 0 ? yesterday : null;
                 }
             }
@@ -628,7 +643,13 @@
         });
         
         // 공유 및 복사 버튼 이벤트
-        const getShareText = () => `🎉 '${state.habits.find(h => MILESTONES.includes(h.streak))?.name}' 습관을 ${state.habits.find(h => MILESTONES.includes(h.streak))?.streak}일 연속으로 달성했습니다! #해빗트래커`;
+        const getShareText = () => {
+            const milestoneHabit = state.habits.find(h => MILESTONES.includes(h.streak));
+            if (milestoneHabit) {
+                return `🎉 '${milestoneHabit.name}' 습관을 ${milestoneHabit.streak}일 연속으로 달성했습니다! #해빗트래커`;
+            }
+            return `🌱 매일 조금씩 성장하는 중! #해빗트래커`;
+        };
 
         elements.shareBtn.addEventListener('click', () => {
             const shareText = getShareText();
