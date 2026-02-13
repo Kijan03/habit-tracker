@@ -681,9 +681,38 @@
             }
         });
         
+        // --- 모달 로직 ---
+        const openModal = (modal) => {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+        const closeModal = (modal) => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        const closeAllModals = () => {
+            closeModal(elements.howToUseModal);
+            closeModal(elements.celebrationModal);
+            closeModal(elements.aboutModal);
+            closeModal(elements.privacyModal);
+            closeModal(elements.booksModal);
+            closeModal(elements.contactModal);
+        };
+
         elements.howToUseBtn.addEventListener('click', () => openModal(elements.howToUseModal));
         elements.aboutBtn.addEventListener('click', () => openModal(elements.aboutModal));
         elements.privacyBtn.addEventListener('click', () => openModal(elements.privacyModal));
+        
+        // 명시적으로 "문의하기" 텍스트가 포함된 모든 링크에 이벤트 바인딩
+        document.querySelectorAll('a').forEach(link => {
+            if (link.textContent.includes('문의하기')) {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openModal(elements.contactModal);
+                });
+            }
+        });
         
         elements.modalCloseBtns.forEach(btn => {
             btn.addEventListener('click', closeAllModals);
