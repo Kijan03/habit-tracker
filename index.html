@@ -219,15 +219,18 @@
                 </div>
             </div>
             <div class="card shadow-lg rounded-3xl p-6 flex flex-col gap-3">
-                 <button id="how-to-use-btn" class="button-accent text-white font-bold py-4 px-6 rounded-2xl w-full flex items-center justify-center gap-2 shadow-md">
-                    <i data-lucide="help-circle" class="w-5 h-5"></i> <span class="flex-grow text-center">사용 방법 보기</span>
+                 <button id="how-to-use-btn" class="button-accent text-white font-bold py-4 px-6 rounded-2xl w-full flex items-center justify-center gap-3 shadow-md hover:scale-[1.02] transition-transform">
+                    <i data-lucide="help-circle" class="w-5 h-5 flex-shrink-0"></i>
+                    <span>사용 방법 보기</span>
                  </button>
                  <div class="grid grid-cols-2 gap-3">
-                    <button id="export-btn" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-md active:scale-95">
-                        <i data-lucide="download" class="w-4 h-4"></i> <span class="flex-grow text-center">백업</span>
+                    <button id="export-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg active:scale-95">
+                        <i data-lucide="download" class="w-4 h-4 flex-shrink-0"></i>
+                        <span>백업</span>
                     </button>
-                    <button id="import-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-md active:scale-95">
-                        <i data-lucide="upload" class="w-4 h-4"></i> <span class="flex-grow text-center">복구</span>
+                    <button id="import-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg active:scale-95">
+                        <i data-lucide="upload" class="w-4 h-4 flex-shrink-0"></i>
+                        <span>복구</span>
                     </button>
                  </div>
                  <input type="file" id="import-file" class="hidden" accept=".json">
@@ -383,29 +386,18 @@
     
     <footer class="border-t border-gray-200 pt-12 pb-8" style="background-color: var(--card-bg-color); border-color: rgba(0,0,0,0.1);">
         <div class="container mx-auto max-w-5xl px-4">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-                <div class="col-span-1">
+            <div class="flex flex-col md:flex-row justify-between items-start gap-12 mb-12">
+                <div class="max-w-md">
                     <h4 class="font-bold text-lg mb-4 text-main" style="color: var(--text-color);">Habit Tracker</h4>
                     <p class="text-secondary text-sm leading-relaxed" style="color: var(--text-secondary-color);">매일의 작은 성공을 기록하며 꾸준한 성장을 만들어가는 미니멀 해빗 트래커입니다. 당신의 목표 달성을 진심으로 응원합니다.</p>
                 </div>
-                <div class="col-span-1">
-                    <h4 class="font-bold text-lg mb-4 text-main" style="color: var(--text-color);">Quick Links</h4>
-                    <ul class="text-secondary text-sm space-y-2">
-                        <li><a href="#tips" class="hover:text-green-600" style="color: var(--text-secondary-color);">습관 전략</a></li>
-                        <li><a href="#habit-science" class="hover:text-green-600" style="color: var(--text-secondary-color);">습관의 과학</a></li>
-                        <li><a href="#recommended-books" class="hover:text-green-600" style="color: var(--text-secondary-color);">추천 도서</a></li>
-                    </ul>
-                </div>
-                <div class="col-span-1">
-                    <h4 class="font-bold text-lg mb-4 text-main" style="color: var(--text-color);">Legal</h4>
-                    <ul class="text-secondary text-sm space-y-2">
-                        <li><a href="#" onclick="openModal(elements.aboutModal); return false;" class="hover:text-green-600" style="color: var(--text-secondary-color);">서비스 소개</a></li>
-                        <li><a href="#" onclick="openModal(elements.privacyModal); return false;" class="hover:text-green-600" style="color: var(--text-secondary-color);">개인정보처리방침</a></li>
-                        <li><a href="mailto:kijan03@gmail.com" class="hover:text-green-600" style="color: var(--text-secondary-color);">이메일 문의</a></li>
-                    </ul>
+                <div class="flex gap-8">
+                    <a href="#" onclick="openModal(elements.aboutModal); return false;" class="text-sm font-medium text-secondary hover:text-green-600 transition-colors" style="color: var(--text-secondary-color);">서비스 소개</a>
+                    <a href="#" onclick="openModal(elements.privacyModal); return false;" class="text-sm font-medium text-secondary hover:text-green-600 transition-colors" style="color: var(--text-secondary-color);">개인정보처리방침</a>
+                    <a href="#" onclick="openModal(elements.contactModal); return false;" class="text-sm font-medium text-secondary hover:text-green-600 transition-colors" style="color: var(--text-secondary-color);">이메일 문의</a>
                 </div>
             </div>
-            <div class="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4" style="border-color: rgba(0,0,0,0.05);">
                 <p class="text-xs text-gray-400">&copy; 2024 Habit Tracker. All Rights Reserved.</p>
                 <div class="flex gap-4 text-xs text-gray-400">
                     <span>Designed for Growth</span>
