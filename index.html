@@ -395,10 +395,11 @@
             <button class="modal-close-btn absolute top-4 right-4 text-2xl font-bold text-secondary hover:text-main">&times;</button>
             <h2 class="text-3xl font-bold text-main mb-2">🎉 축하합니다! 🎉</h2>
             <p id="celebration-text" class="text-lg text-secondary mb-6"></p>
-            <div class="flex gap-4">
+            <div class="flex gap-4 hidden"> <!-- 공유 기능 일시 보류 -->
                 <button id="share-btn" class="flex-1 bg-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-600">자랑하기</button>
                 <button id="copy-btn" class="flex-1 bg-gray-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-600">내용 복사</button>
             </div>
+            <button onclick="closeAllModals()" class="button-accent text-white font-bold py-3 px-8 rounded-lg">확인</button>
         </div>
     </div>
 
@@ -724,7 +725,7 @@
             }
         });
         
-        // 공유 및 복사 버튼 이벤트
+        /* 공유 및 복사 기능 일시 보류
         const getShareText = () => {
             const milestoneHabit = state.habits.find(h => MILESTONES.includes(h.streak));
             if (milestoneHabit) {
@@ -755,6 +756,7 @@
                 }, 2000);
             });
         });
+        */
 
         // --- 초기화 ---
         function init() {
