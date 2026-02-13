@@ -5,83 +5,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="매일의 작은 성공을 기록하며 꾸준한 성장을 만들어가는 미니멀 해빗 트래커입니다. 당신의 목표 달성을 응원합니다.">
     <meta name="google-adsense-account" content="ca-pub-1671769231692668">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1671769231692668"
      crossorigin="anonymous"></script>
-    <title>Habit Tracker - 당신의 성장을 응원합니다</title>
+    <title>Habit Tracker - 어제보다 더 나은 나를 만드는 시간</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Tailwind CSS JIT 컴파일러가 동적 클래스를 인식하도록 돕는 기본 스타일 */
+        :root {
+            --primary-color: #10b981;
+            --primary-hover: #059669;
+        }
         body {
-            background-color: var(--bg-color, #f0f2f5);
+            font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+            background-color: var(--bg-color, #f8fafc);
             transition: background-color 0.3s ease;
-            overflow-x: hidden; /* 콘페티가 가로 스크롤을 유발하지 않도록 */
+            word-break: keep-all; /* 한국어 줄바꿈 가독성 개선 */
         }
         .card {
             background-color: var(--card-bg-color, #ffffff);
+            border: 1px solid rgba(0,0,0,0.05);
         }
         .text-main {
-            color: var(--text-color, #1f2937);
+            color: var(--text-color, #1e293b);
+            line-height: 1.6;
         }
         .text-secondary {
-            color: var(--text-secondary-color, #6b7280);
-        }
-        .progress-bar-bg {
-            background-color: var(--progress-bg-color, #e5e7eb);
+            color: var(--text-secondary-color, #64748b);
+            line-height: 1.7;
         }
         .progress-bar-fill {
-            background-color: var(--accent-color, #34d399);
-        }
-        .bg-input { /* New style for input background */
-            background-color: var(--input-bg-color, #f3f4f6);
+            background: linear-gradient(90deg, #34d399, #10b981);
         }
         .button-accent {
-             background-color: var(--accent-color, #34d399);
+             background-color: var(--accent-color, #10b981);
         }
         .button-accent:hover {
-            background-color: var(--accent-hover-color, #10b981);
+            background-color: var(--accent-hover-color, #059669);
         }
-        .streak-text {
-            color: var(--streak-color, #f59e0b);
+        /* 스크롤바 커스텀 */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-        section {
-            margin-top: 2.5rem;
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
         }
-        .confetti {
-            width: 10px;
-            height: 10px;
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .back-to-top {
             position: fixed;
-            top: -10px;
-            animation: fall 5s linear forwards;
-            pointer-events: none;
-        }
-        @keyframes fall {
-            to {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-            }
+            bottom: 2rem;
+            right: 2rem;
+            display: none;
+            z-index: 50;
         }
     </style>
 </head>
-<body class="text-main">
+<body class="text-main min-h-screen flex flex-col">
 
-    <!-- 상단 광고 영역 -->
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-1671769231692668"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>
-         (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
+    <!-- 상단 내비게이션 -->
+    <nav class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200">
+        <div class="container mx-auto max-w-5xl px-4 h-16 flex items-center justify-between">
+            <a href="#" class="text-xl font-bold text-green-600 flex items-center gap-2">
+                <span class="text-2xl">🌱</span> Habit Tracker
+            </a>
+            <div class="hidden md:flex gap-8 text-sm font-medium text-secondary">
+                <a href="#habit-app" class="hover:text-green-600 transition-colors">트래커</a>
+                <a href="#tips" class="hover:text-green-600 transition-colors">습관 전략</a>
+                <a href="#habit-science" class="hover:text-green-600 transition-colors">습관의 과학</a>
+                <a href="#recommended-books" class="hover:text-green-600 transition-colors">추천 도서</a>
+                <a href="#contact" class="hover:text-green-600 transition-colors">문의하기</a>
+            </div>
+            <button id="mobile-menu-btn" class="md:hidden text-2xl">☰</button>
+        </div>
+    </nav>
 
-    <div class="container mx-auto max-w-2xl p-4 md:p-6">
+    <!-- 모바일 메뉴 (기본 숨김) -->
+    <div id="mobile-menu" class="fixed inset-0 z-50 bg-white hidden flex-col p-6 space-y-4">
+        <div class="flex justify-between items-center mb-4">
+            <span class="text-xl font-bold text-green-600">Menu</span>
+            <button id="close-mobile-menu" class="text-3xl">&times;</button>
+        </div>
+        <a href="#habit-app" class="text-lg font-medium border-b py-2">트래커</a>
+        <a href="#tips" class="text-lg font-medium border-b py-2">습관 전략</a>
+        <a href="#habit-science" class="text-lg font-medium border-b py-2">습관의 과학</a>
+        <a href="#recommended-books" class="text-lg font-medium border-b py-2">추천 도서</a>
+        <a href="#contact" class="text-lg font-medium border-b py-2">문의하기</a>
+    </div>
+
+    <div class="container mx-auto max-w-2xl p-4 md:p-6 flex-grow">
         
+        <!-- 상단 광고 영역 -->
+        <div class="my-4 text-center">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-1671769231692668"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+
         <header class="text-center my-8">
             <h1 id="today-date" class="text-xl font-semibold text-secondary"></h1>
             <p id="motivational-quote" class="text-2xl md:text-3xl font-bold mt-2 text-main"></p>
         </header>
 
-        <main class="card shadow-lg rounded-2xl p-6 space-y-6">
+        <main id="habit-app" class="card shadow-lg rounded-2xl p-6 space-y-6">
             <div class="progress-section">
                 <div class="flex justify-between items-center mb-1">
                     <span class="text-sm font-medium text-secondary">오늘의 달성률</span>
@@ -103,111 +138,190 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <div class="card shadow-lg rounded-2xl p-4">
                 <h3 class="font-bold text-center mb-3 text-main">테마 색상 변경</h3>
-                <div id="theme-switcher" class="flex justify-center gap-3">
-                    <button data-color="#f0f2f5" class="w-8 h-8 rounded-full bg-[#f0f2f5] border-2 border-gray-300"></button>
-                    <button data-color="#1f2937" class="w-8 h-8 rounded-full bg-[#1f2937] border-2"></button>
-                    <button data-color="#fefce8" class="w-8 h-8 rounded-full bg-[#fefce8] border-2"></button>
-                    <button data-color="#e0e7ff" class="w-8 h-8 rounded-full bg-[#e0e7ff] border-2"></button>
+                <div id="theme-switcher" class="flex flex-wrap justify-center gap-3">
+                    <button data-color="#f0f2f5" class="w-8 h-8 rounded-full bg-[#f0f2f5] border-2 border-gray-300" title="기본"></button>
+                    <button data-color="#1f2937" class="w-8 h-8 rounded-full bg-[#1f2937] border-2" title="다크"></button>
+                    <button data-color="#fefce8" class="w-8 h-8 rounded-full bg-[#fefce8] border-2" title="크림"></button>
+                    <button data-color="#e0e7ff" class="w-8 h-8 rounded-full bg-[#e0e7ff] border-2" title="인디고"></button>
+                    <button data-color="#d1fae5" class="w-8 h-8 rounded-full bg-[#d1fae5] border-2" title="에메랄드"></button>
+                    <button data-color="#ffedd5" class="w-8 h-8 rounded-full bg-[#ffedd5] border-2" title="피치"></button>
+                    <button data-color="#fce7f3" class="w-8 h-8 rounded-full bg-[#fce7f3] border-2" title="로즈"></button>
+                    <button data-color="#ecfeff" class="w-8 h-8 rounded-full bg-[#ecfeff] border-2" title="시안"></button>
                 </div>
             </div>
-            <div class="card shadow-lg rounded-2xl p-4 flex items-center justify-center">
+            <div class="card shadow-lg rounded-2xl p-4 flex flex-col items-center justify-center space-y-3">
                  <button id="how-to-use-btn" class="button-accent text-white font-bold py-3 px-6 rounded-lg w-full">💡 사용 방법 보기</button>
+                 <button id="about-btn" class="button-accent text-white font-bold py-3 px-6 rounded-lg w-full">ℹ️ 서비스 소개</button>
+                 <button id="privacy-btn" class="button-accent text-white font-bold py-3 px-6 rounded-lg w-full">🔒 개인정보처리방침</button>
             </div>
         </div>
 
-        <!-- 콘텐츠 섹션 -->
+        <!-- 콘텐츠 섹션 1: 전략 -->
         <section id="tips" class="card shadow-lg rounded-2xl p-6 md:p-8">
-            <h2 class="text-2xl font-bold text-center mb-6 text-main">성공적인 습관 형성을 위한 5가지 전략</h2>
+            <h2 class="text-2xl font-bold text-center mb-6 text-main underline decoration-green-400 decoration-4 underline-offset-8">성공적인 습관 형성을 위한 5가지 전략</h2>
             <div class="text-secondary space-y-6 prose max-w-none">
                 <p>새로운 습관을 만드는 것은 단순히 '열심히 해야지'라는 다짐만으로는 부족합니다. 우리의 뇌가 새로운 행동에 저항하지 않고 자연스럽게 받아들이도록 만드는 과학적인 방법들이 있습니다. 아래 5가지 전략을 통해 당신의 목표를 현실로 만들어보세요.</p>
                 
                 <h3 class="font-bold text-main">1. 아주 작은 단위로 시작하세요 (2분 규칙)</h3>
-                <p>제임스 클리어의 저서 '아주 작은 습관의 힘'에서 강조하는 핵심 전략입니다. '매일 책 읽기'가 목표라면 '매일 딱 한 페이지만 읽기'로, '매일 운동하기'가 목표라면 '운동복으로 갈아입기'로 시작하는 것입니다. 새로운 습관을 시작하는 데 드는 저항감을 없애는 것이 핵심입니다. 일단 시작하면, 한 페이지만 읽으려다 10분을 읽게 되고, 운동복을 입고 나면 간단한 스트레칭이라도 하게 될 가능성이 훨씬 높아집니다.</p>
+                <p>제임스 클리어의 저서 '아주 작은 습관의 힘'에서 강조하는 핵심 전략입니다. '매일 책 읽기'가 목표라면 '매일 딱 한 페이지만 읽기'로, '매일 운동하기'가 목표라면 '운동복으로 갈아입기'로 시작하는 것입니다. 새로운 습관을 시작하는 데 드는 저항감을 없애는 것이 핵심입니다.</p>
 
                 <h3 class="font-bold text-main">2. 이미 가진 습관에 새로운 습관을 붙이세요 (습관 쌓기)</h3>
-                <p>새로운 습관을 위한 시간과 장소를 따로 마련하는 것은 부담스러울 수 있습니다. 대신, 이미 매일 하고 있는 기존 습관에 새로운 습관을 짝지어보세요. 예를 들어, "아침에 커피를 내린 후, 1분간 명상하기" 또는 "저녁 양치질을 한 후, 3줄 일기 쓰기"와 같은 방식입니다. 기존 습관이 새로운 습관을 실행하라는 강력한 신호(Trigger) 역할을 하게 됩니다.</p>
+                <p>새로운 습관을 위한 시간과 장소를 따로 마련하는 것은 부담스러울 수 있습니다. 대신, 이미 매일 하고 있는 기존 습관에 새로운 습관을 짝지어보세요. 예를 들어, "아침에 커피를 내린 후, 1분간 명상하기"와 같은 방식입니다.</p>
 
                 <h3 class="font-bold text-main">3. 눈에 보이게 만들어 즉각적인 보상을 제공하세요</h3>
-                <p>인간의 뇌는 즉각적인 보상에 강하게 반응합니다. 이 해빗 트래커에 체크하며 연속 달성(Streak) 숫자를 높여가는 것이 바로 시각적인 보상의 한 예입니다. 달력에 X 표시를 하거나, 목표 달성 시 소액을 저금하는 등 자신만의 보상 시스템을 만들어보세요. 보상은 습관을 유지하는 강력한 동력이 됩니다.</p>
+                <p>인간의 뇌는 즉각적인 보상에 강하게 반응합니다. 이 해빗 트래커에 체크하며 연속 달성(Streak) 숫자를 높여가는 것이 바로 시각적인 보상의 한 예입니다.</p>
                 
                 <h3 class="font-bold text-main">4. 환경을 디자인하여 유혹을 제거하세요</h3>
-                <p>'의지력'에만 의존하는 것은 실패로 가는 지름길입니다. 건강한 식습관을 원한다면, 부엌에서 과자나 탄산음료를 모두 치워버리세요. 아침 운동을 원한다면, 잠들기 전에 운동복을 침대 옆에 두세요. 좋은 습관을 실천하기는 쉽게, 나쁜 습관을 실천하기는 어렵게 만드는 환경 설정이 의지력보다 훨씬 효과적입니다.</p>
+                <p>'의지력'에만 의존하는 것은 실패로 가는 지름길입니다. 건강한 식습관을 원한다면, 부엌에서 과자나 탄산음료를 모두 치워버리세요. 환경 설정이 의지력보다 훨씬 효과적입니다.</p>
 
                 <h3 class="font-bold text-main">5. 하루 놓쳤다고 해서 모든 것을 망치지 마세요</h3>
-                <p>완벽주의는 습관 형성의 가장 큰 적입니다. 어쩌다 하루 이틀 습관을 놓치는 것은 지극히 자연스러운 일입니다. 중요한 것은 '연속으로 두 번은 놓치지 않는다'는 마음가짐입니다. 하루 실패했더라도, "나는 실패자야"라고 자책하는 대신 "괜찮아, 내일 다시 하면 돼"라고 생각하며 다음 날 바로 습관을 이어가는 것이 장기적인 성공의 열쇠입니다.</p>
+                <p>완벽주의는 습관 형성의 가장 큰 적입니다. 어쩌다 하루 이틀 습관을 놓치는 것은 지극히 자연스러운 일입니다. 중요한 것은 '연속으로 두 번은 놓치지 않는다'는 마음가짐입니다.</p>
             </div>
         </section>
 
+        <!-- 콘텐츠 섹션 2: 습관의 과학 (새로 추가) -->
+        <section id="habit-science" class="card shadow-lg rounded-2xl p-6 md:p-8">
+            <h2 class="text-2xl font-bold text-center mb-6 text-main underline decoration-green-400 decoration-4 underline-offset-8">습관의 과학: 뇌는 어떻게 변화하는가</h2>
+            <div class="text-secondary space-y-6 prose max-w-none">
+                <p>습관은 우리 뇌의 '기저핵(Basal Ganglia)'이라는 부위에서 담당합니다. 우리가 어떤 행동을 반복할 때, 뇌는 에너지를 절약하기 위해 그 과정을 자동화하며, 이것이 바로 습관이 형성되는 과정입니다.</p>
+                
+                <h3 class="font-bold text-main">신경 가소성과 습관</h3>
+                <p>뇌는 평생에 걸쳐 변화할 수 있는 '신경 가소성'을 가지고 있습니다. 새로운 습관을 실천할 때마다 뇌세포 사이의 연결이 강화되며, 마치 숲속에 새로운 길을 내는 것과 같습니다. 처음에는 길이 좁고 거칠지만, 반복해서 걸을수록 길은 넓고 탄탄해집니다.</p>
+
+                <h3 class="font-bold text-main">도파민 루프의 활용</h3>
+                <p>습관이 성공적으로 안착하려면 '보상'이 필수적입니다. 행동을 완료했을 때 분비되는 도파민은 뇌에게 "이 행동은 가치가 있으니 기억해둬!"라고 속삭입니다. 트래커의 체크 표시 하나가 당신의 뇌를 긍정적으로 자극하는 이유입니다.</p>
+            </div>
+        </section>
+
+        <!-- 콘텐츠 섹션 3: 추천 도서 -->
         <section id="recommended-books" class="card shadow-lg rounded-2xl p-6 md:p-8">
-            <h2 class="text-2xl font-bold text-center mb-6 text-main">습관 형성을 위한 추천 도서</h2>
+            <h2 class="text-2xl font-bold text-center mb-6 text-main underline decoration-green-400 decoration-4 underline-offset-8">습관 형성을 위한 추천 도서</h2>
             <div class="text-secondary space-y-8">
-                <div class="book-recommendation">
-                    <h3 class="font-bold text-main mb-2">1. 아주 작은 습관의 힘 (Atomic Habits) - 제임스 클리어</h3>
-                    <p>이 책은 습관 형성에 관한 최고의 교과서로 불립니다. '2분 규칙', '습관 쌓기' 등 누구나 쉽게 따라 할 수 있는 구체적이고 과학적인 방법론을 제시합니다. 좋은 습관을 만들고 나쁜 습관을 버리고 싶은 사람이라면 반드시 읽어야 할 필독서입니다.</p>
+                <div class="book-recommendation border-l-4 border-green-400 pl-4">
+                    <h3 class="font-bold text-main mb-2 text-lg">1. 아주 작은 습관의 힘 (Atomic Habits) - 제임스 클리어</h3>
+                    <p>습관 형성에 관한 최고의 교과서입니다. '2분 규칙', '습관 쌓기' 등 누구나 쉽게 따라 할 수 있는 구체적이고 과학적인 방법론을 제시합니다.</p>
                 </div>
-                <div class="book-recommendation">
-                    <h3 class="font-bold text-main mb-2">2. 습관의 힘 (The Power of Habit) - 찰스 두히그</h3>
-                    <p>우리의 삶과 비즈니스를 지배하는 습관의 메커니즘을 파헤친 책입니다. '신호-반복행동-보상'으로 이어지는 습관의 고리를 이해하고, 이를 활용하여 개인의 삶과 조직의 문화를 어떻게 변화시킬 수 있는지에 대한 깊은 통찰을 제공합니다.</p>
+                <div class="book-recommendation border-l-4 border-green-400 pl-4">
+                    <h3 class="font-bold text-main mb-2 text-lg">2. 습관의 힘 (The Power of Habit) - 찰스 두히그</h3>
+                    <p>'신호-반복행동-보상'으로 이어지는 습관의 고리를 이해하고, 이를 통해 개인과 조직의 변화를 이끌어내는 통찰을 제공합니다.</p>
                 </div>
             </div>
         </section>
 
-        <section id="about" class="card shadow-lg rounded-2xl p-6 md:p-8">
-            <h2 class="text-2xl font-bold text-center mb-4 text-main">About Us</h2>
-            <div class="text-secondary space-y-4">
-                <p>이 해빗 트래커는 개발자 K군이 자신의 작은 습관들을 관리하기 위해 만들기 시작한 개인 프로젝트입니다. 거창한 계획보다는 매일의 작은 실천이 모여 큰 변화를 만든다는 믿음으로, 복잡한 기능 없이 오직 '습관 체크'라는 핵심에만 집중했습니다.</p>
-                <p>사용자가 부담 없이 매일 방문하여 자신의 성장을 기록하고, 작은 성공들이 모여 만들어내는 '복리의 마법'을 경험하며 동기를 부여받기를 바랍니다. 이 작은 도구가 당신의 위대한 여정에 보탬이 되기를 진심으로 희망합니다.</p>
-                <p class="font-semibold text-center mt-4 text-main">"어제의 나보다 조금 더 나은 오늘을 만드는 당신을 응원합니다."</p>
-                 <p class="text-xs text-center mt-6"><strong>애드센스 승인 안내:</strong> 구글 애드센스 승인을 받기 위해서는 이 사이트가 <strong class="text-red-500">개인 도메인(예: yoursite.com)</strong>에 게시되어야 합니다. GitHub 페이지만으로는 일반적으로 승인이 어렵습니다.</p>
-            </div>
-        </section>
+        <!-- 중단 광고 영역 -->
+        <div class="my-10 text-center">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-format="fluid"
+                 data-ad-layout-key="-fb+5w+4e-db+86"
+                 data-ad-client="ca-pub-1671769231692668"
+                 data-ad-slot="1234567890"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
 
-        <section id="privacy" class="card shadow-lg rounded-2xl p-6 md:p-8">
-            <h2 class="text-2xl font-bold text-center mb-4 text-main">개인정보처리방침</h2>
-            <div class="text-secondary space-y-4 text-sm">
-                <p>본 사이트는 사용자의 개인정보를 매우 소중하게 생각하며, 사용자의 정보를 안전하게 보호하기 위해 최선을 다하고 있습니다. 본 개인정보처리방침은 귀하의 데이터가 어떻게 수집되고 사용되는지에 대해 설명합니다.</p>
-                <h3 class="font-bold text-main">1. 수집하는 정보</h3>
-                <p>본 사이트는 귀하가 입력하는 습관 목록 및 테마 설정 정보를 수집합니다. 이 외에 이름, 이메일 주소 등 식별 가능한 개인정보는 일절 수집하지 않습니다.</p>
-                <h3 class="font-bold text-main">2. 정보의 저장</h3>
-                <p>모든 데이터(습관 목록, 테마 설정)는 외부 서버로 전송되지 않으며, 사용자의 개인 컴퓨터, 스마트폰 등 접속한 기기 내의 <strong class="text-main">브라우저 저장소(localStorage)</strong>에만 저장됩니다. 따라서, 다른 기기에서 접속 시 데이터는 연동되지 않으며, 브라우저의 캐시나 데이터를 삭제할 경우 모든 기록이 영구적으로 삭제됩니다.</p>
-                <p class="text-xs text-red-500 mt-2"><strong>※ 유의사항:</strong> 정보는 브라우저에 저장되어 있으므로, 캐시를 삭제하시면 저장된 정보가 초기화될 수 있습니다.</p>
-                <h3 class="font-bold text-main">3. 제3자 광고</h3>
-                <p>본 사이트는 구글 애드센스와 같은 제3자 광고 서비스를 이용할 수 있습니다. 이러한 광고 업체는 사용자에게 더 관련성 높은 광고를 제공하기 위해 쿠키(cookie)를 사용할 수 있습니다. 쿠키 사용을 원치 않으실 경우, 브라우저 설정을 통해 쿠키 허용을 거부할 수 있습니다.</p>
-                <h3 class="font-bold text-main">4. 정책 변경</h3>
-                <p>법률이나 서비스의 변경사항을 반영하기 위한 목적으로 개인정보처리방침을 수정할 수 있습니다. 변경사항이 있을 경우, 본 페이지를 통해 고지하겠습니다.</p>
-            </div>
-        </section>
-        
         <section id="contact" class="card shadow-lg rounded-2xl p-6 md:p-8 text-center">
-            <h2 class="text-2xl font-bold mb-4 text-main">Contact</h2>
-            <p class="text-secondary">피드백이나 문의사항이 있으신 경우, 아래 이메일로 연락 주시기 바랍니다.</p>
-            <p class="font-semibold text-main mt-2"><a href="mailto:kijan03@gmail.com" class="hover:underline">kijan03@gmail.com</a></p>
+            <h2 class="text-2xl font-bold mb-4 text-main">Contact & Feedback</h2>
+            <p class="text-secondary">사용 중 불편한 점이나 제안하고 싶은 기능이 있다면 언제든 알려주세요. 여러분의 의견은 더 나은 서비스를 만드는 데 큰 힘이 됩니다.</p>
+            <div class="mt-6 flex flex-col items-center gap-2">
+                <p class="text-sm text-secondary">공식 문의 이메일</p>
+                <a href="mailto:kijan03@gmail.com" class="text-xl font-bold text-green-600 hover:underline">kijan03@gmail.com</a>
+            </div>
         </section>
     </div>
 
+    <!-- 맨 위로 가기 버튼 -->
+    <button id="back-to-top" class="back-to-top bg-green-600 text-white p-3 rounded-full shadow-2xl hover:bg-green-700 transition-all transform hover:scale-110">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="Wait 5M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+
     <!-- 하단 광고 영역 -->
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-1671769231692668"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>
-         (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
+    <div class="container mx-auto max-w-2xl px-4 md:px-6 mb-8">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-1671769231692668"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
     
-    <footer class="text-center py-8">
-        <div class="flex justify-center gap-6 mb-4">
-            <a href="#tips" class="text-secondary hover:text-main">습관 팁</a>
-            <a href="#success-stories" class="text-secondary hover:text-main">성공 사례</a>
-            <a href="#recommended-books" class="text-secondary hover:text-main">추천 도서</a>
-            <a href="#about" class="text-secondary hover:text-main">소개</a>
-            <a href="#privacy" class="text-secondary hover:text-main">개인정보처리방침</a>
-            <a href="#contact" class="text-secondary hover:text-main">문의</a>
+    <footer class="bg-white border-t border-gray-200 pt-12 pb-8">
+        <div class="container mx-auto max-w-5xl px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+                <div class="col-span-1">
+                    <h4 class="font-bold text-lg mb-4 text-main">Habit Tracker</h4>
+                    <p class="text-secondary text-sm leading-relaxed">매일의 작은 성공을 기록하며 꾸준한 성장을 만들어가는 미니멀 해빗 트래커입니다. 당신의 목표 달성을 진심으로 응원합니다.</p>
+                </div>
+                <div class="col-span-1">
+                    <h4 class="font-bold text-lg mb-4 text-main">Quick Links</h4>
+                    <ul class="text-secondary text-sm space-y-2">
+                        <li><a href="#tips" class="hover:text-green-600">습관 전략</a></li>
+                        <li><a href="#habit-science" class="hover:text-green-600">습관의 과학</a></li>
+                        <li><a href="#recommended-books" class="hover:text-green-600">추천 도서</a></li>
+                    </ul>
+                </div>
+                <div class="col-span-1">
+                    <h4 class="font-bold text-lg mb-4 text-main">Legal</h4>
+                    <ul class="text-secondary text-sm space-y-2">
+                        <li><a href="#" onclick="openModal(elements.aboutModal); return false;" class="hover:text-green-600">서비스 소개</a></li>
+                        <li><a href="#" onclick="openModal(elements.privacyModal); return false;" class="hover:text-green-600">개인정보처리방침</a></li>
+                        <li><a href="mailto:kijan03@gmail.com" class="hover:text-green-600">이메일 문의</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-xs text-gray-400">&copy; 2024 Habit Tracker. All Rights Reserved.</p>
+                <div class="flex gap-4 text-xs text-gray-400">
+                    <span>Designed for Growth</span>
+                    <span>•</span>
+                    <span>Powered by Consistency</span>
+                </div>
+            </div>
         </div>
-        <p class="text-xs text-gray-400">&copy; 2024 Habit Tracker. All Rights Reserved.</p>
     </footer>
 
     <!-- 모달 영역 -->
+    <div id="privacy-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center p-4 z-50">
+        <div class="card rounded-2xl shadow-xl max-w-lg w-full p-6 relative overflow-y-auto max-h-[90vh]">
+            <button class="modal-close-btn absolute top-4 right-4 text-2xl font-bold text-secondary hover:text-main">&times;</button>
+            <h2 class="text-2xl font-bold text-center mb-4 text-main">개인정보처리방침</h2>
+            <div class="text-secondary space-y-4 text-sm leading-relaxed">
+                <p>본 사이트(이하 '서비스')는 사용자의 개인정보를 소중히 다루며, 관련 법령을 준수합니다. 본 방침은 서비스 이용 시 수집되는 정보와 그 보호 방식에 대해 설명합니다.</p>
+                <h3 class="font-bold text-main border-b pb-1">1. 정보의 수집 및 활용</h3>
+                <p>본 서비스는 사용자가 직접 입력하는 '습관 목록' 및 '테마 설정' 정보를 수집합니다. 이 데이터는 오직 사용자의 원활한 서비스 이용을 위해서만 활용됩니다.</p>
+                <h3 class="font-bold text-main border-b pb-1">2. 데이터의 저장 (로컬 스토리지)</h3>
+                <p>본 서비스는 별도의 서버를 운영하지 않습니다. 모든 데이터는 사용자의 브라우저 내 <strong class="text-main">localStorage</strong>에만 저장됩니다. 이는 데이터의 완전한 소유권이 사용자에게 있음을 의미하며, 브라우저 캐시 삭제 시 데이터가 소멸될 수 있음에 유의하시기 바랍니다.</p>
+                <h3 class="font-bold text-main border-b pb-1">3. 제3자 광고 및 쿠키 정책</h3>
+                <p>본 서비스는 구글(Google)에서 제공하는 AdSense 광고를 게재합니다. 구글은 사용자의 관심사를 분석하여 맞춤형 광고를 제공하기 위해 쿠키(Cookie)를 사용합니다. 사용자는 구글의 광고 설정 페이지에서 맞춤형 광고를 비활성화할 수 있습니다.</p>
+                <h3 class="font-bold text-main border-b pb-1">4. 문의처</h3>
+                <p>본 방침과 관련하여 궁금한 점이 있으시면 <a href="mailto:kijan03@gmail.com" class="text-green-600 font-bold underline">kijan03@gmail.com</a>으로 연락 주시기 바랍니다.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="about-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center p-4 z-50">
+        <div class="card rounded-2xl shadow-xl max-w-lg w-full p-6 relative overflow-y-auto max-h-[90vh]">
+            <button class="modal-close-btn absolute top-4 right-4 text-2xl font-bold text-secondary hover:text-main">&times;</button>
+            <h2 class="text-2xl font-bold text-center mb-4 text-main">서비스 소개 (About Us)</h2>
+            <div class="text-secondary space-y-4 leading-relaxed">
+                <p><strong>🌱 Habit Tracker</strong>는 복잡하고 화려한 기능보다는 '매일의 실천'이라는 습관의 본질에 집중하는 미니멀리즘 도구입니다.</p>
+                <p>우리는 누구나 더 나은 자신이 되고 싶어 하지만, 거창한 목표 앞에서 쉽게 좌절하곤 합니다. 본 서비스는 제임스 클리어의 '아주 작은 습관의 힘'에서 영감을 받아, 단 1%의 개선이라도 매일 지속할 수 있도록 돕기 위해 개발되었습니다.</p>
+                <h3 class="font-bold text-main border-b pb-1">우리의 가치</h3>
+                <ul class="list-disc pl-5 space-y-2 text-sm">
+                    <li><strong>심플함:</strong> 불필요한 알림이나 광고 방해 없이 목표에만 집중합니다.</li>
+                    <li><strong>지속가능성:</strong> 스트릭(Streak) 시스템을 통해 성취감을 시각화합니다.</li>
+                    <li><strong>투명성:</strong> 사용자의 데이터는 오직 사용자의 기기에만 머뭅니다.</li>
+                </ul>
+                <p class="text-center mt-6 italic font-medium">"당신의 위대한 변화는 오늘 입력한 작은 습관에서 시작됩니다."</p>
+            </div>
+        </div>
+    </div>
+    
     <div id="how-to-use-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center p-4 z-50">
         <div class="card rounded-2xl shadow-xl max-w-lg w-full p-6 relative">
             <button class="modal-close-btn absolute top-4 right-4 text-2xl font-bold text-secondary hover:text-main">&times;</button>
@@ -253,7 +367,11 @@
             celebrationText: document.getElementById('celebration-text'),
             shareBtn: document.getElementById('share-btn'),
             copyBtn: document.getElementById('copy-btn'),
-            modalCloseBtns: document.querySelectorAll('.modal-close-btn')
+            modalCloseBtns: document.querySelectorAll('.modal-close-btn'),
+            aboutBtn: document.getElementById('about-btn'),
+            aboutModal: document.getElementById('about-modal'),
+            privacyBtn: document.getElementById('privacy-btn'),
+            privacyModal: document.getElementById('privacy-modal')
         };
 
         const STORAGE_KEY_HABITS = 'habitsDataV4'; // 버전 업데이트
@@ -302,22 +420,36 @@
         const renderHabits = () => {
             elements.habitList.innerHTML = '';
             if (state.habits.length === 0) {
-                elements.habitList.innerHTML = `<p class="text-center text-secondary">아직 등록된 습관이 없습니다. 첫 습관을 추가해보세요!</p>`;
+                elements.habitList.innerHTML = `<p class="text-center py-10 text-secondary">아직 등록된 습관이 없습니다.<br>오늘의 첫 번째 습관을 추가해보세요! 🌱</p>`;
             } else {
                 state.habits.forEach((habit, index) => {
                     const isCompleted = habit.completed;
                     const li = document.createElement('li');
-                    li.className = `habit-item flex items-center p-4 rounded-lg transition-all ${isCompleted ? 'bg-green-100/50' : 'card'}`;
+                    li.className = `habit-item group flex items-center p-4 rounded-xl transition-all duration-200 cursor-pointer ${isCompleted ? 'bg-green-50' : 'card hover:shadow-md hover:border-green-200'}`;
                     li.innerHTML = `
-                        <div class="flex-grow flex items-center gap-3 cursor-pointer" onclick="document.getElementById('checkbox-${index}').click()">
-                            <input type="checkbox" id="checkbox-${index}" ${isCompleted ? 'checked' : ''} class="w-6 h-6 rounded-md border-2 border-gray-300 text-green-500 focus:ring-0">
-                            <span class="flex-grow ${isCompleted ? 'line-through text-secondary' : 'text-main'}">${habit.name}</span>
+                        <div class="flex-grow flex items-center gap-4">
+                            <div class="relative flex items-center justify-center">
+                                <input type="checkbox" id="checkbox-${index}" ${isCompleted ? 'checked' : ''} class="peer w-6 h-6 rounded-full border-2 border-gray-300 text-green-500 focus:ring-0 cursor-pointer transition-all">
+                                <div class="absolute pointer-events-none text-white opacity-0 peer-checked:opacity-100 transition-opacity">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <span class="flex-grow font-medium ${isCompleted ? 'line-through text-slate-400' : 'text-slate-700'}">${habit.name}</span>
                         </div>
-                        <span class="streak-text font-bold text-sm mx-4">${habit.streak > 0 ? `🔥 ${habit.streak}` : ''}</span>
-                        <button class="delete-btn text-gray-400 hover:text-red-500 text-lg">&times;</button>
+                        <div class="flex items-center gap-2">
+                            <span class="streak-text font-bold text-sm px-2 py-1 bg-orange-50 text-orange-500 rounded-full ${habit.streak > 0 ? 'opacity-100' : 'opacity-0'}">🔥 ${habit.streak}</span>
+                            <button class="delete-btn opacity-0 group-hover:opacity-100 p-2 text-slate-300 hover:text-red-500 transition-all">&times;</button>
+                        </div>
                     `;
                     
-                    li.querySelector('input[type="checkbox"]').addEventListener('change', () => toggleHabit(index));
+                    li.addEventListener('click', (e) => {
+                        if (!e.target.closest('.delete-btn')) {
+                            toggleHabit(index);
+                        }
+                    });
+
                     li.querySelector('.delete-btn').addEventListener('click', (e) => {
                         e.stopPropagation();
                         deleteHabit(index);
@@ -327,6 +459,19 @@
             }
             updateProgressBar();
         };
+
+        // --- 스크롤 제어 ---
+        const backToTopBtn = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopBtn.style.display = 'block';
+            } else {
+                backToTopBtn.style.display = 'none';
+            }
+        });
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
 
         function displayHeaderInfo() {
             const today = new Date();
@@ -342,6 +487,13 @@
         const closeModal = (modal) => {
             modal.classList.add('hidden');
             modal.classList.remove('flex');
+        };
+
+        const closeAllModals = () => {
+            closeModal(elements.howToUseModal);
+            closeModal(elements.celebrationModal);
+            closeModal(elements.aboutModal);
+            closeModal(elements.privacyModal);
         };
         
         // --- 축하 로직 ---
@@ -425,6 +577,28 @@
         };
 
         // --- 이벤트 리스너 ---
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const closeMobileMenuBtn = document.getElementById('close-mobile-menu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.remove('hidden');
+            mobileMenu.classList.add('flex');
+        });
+
+        closeMobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+            mobileMenu.classList.remove('flex');
+        });
+
+        // 모바일 메뉴 링크 클릭 시 메뉴 닫기
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                mobileMenu.classList.remove('flex');
+            });
+        });
+
         elements.habitForm.addEventListener('submit', (e) => {
             e.preventDefault();
             addHabit(elements.habitInput.value);
@@ -440,18 +614,16 @@
         });
         
         elements.howToUseBtn.addEventListener('click', () => openModal(elements.howToUseModal));
+        elements.aboutBtn.addEventListener('click', () => openModal(elements.aboutModal));
+        elements.privacyBtn.addEventListener('click', () => openModal(elements.privacyModal));
         
         elements.modalCloseBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                closeModal(elements.howToUseModal);
-                closeModal(elements.celebrationModal);
-            });
+            btn.addEventListener('click', closeAllModals);
         });
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                closeModal(elements.howToUseModal);
-                closeModal(elements.celebrationModal);
+                closeAllModals();
             }
         });
         
