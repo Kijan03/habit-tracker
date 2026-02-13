@@ -126,13 +126,13 @@
                 <i data-lucide="sprout" class="w-6 h-6"></i> Habit Tracker
             </a>
             <div class="hidden md:flex gap-8 text-sm font-medium text-secondary">
-                <a href="#" onclick="openModal(elements.aboutModal); return false;" class="hover:text-green-600 transition-colors flex items-center gap-1" style="color: var(--text-secondary-color);">
+                <a href="#" id="about-btn" class="hover:text-green-600 transition-colors flex items-center gap-1" style="color: var(--text-secondary-color);">
                     <i data-lucide="info" class="w-4 h-4"></i> 서비스 소개
                 </a>
-                <a href="#" onclick="openModal(elements.privacyModal); return false;" class="hover:text-green-600 transition-colors flex items-center gap-1" style="color: var(--text-secondary-color);">
+                <a href="#" id="privacy-btn" class="hover:text-green-600 transition-colors flex items-center gap-1" style="color: var(--text-secondary-color);">
                     <i data-lucide="shield-check" class="w-4 h-4"></i> 개인정보처리방침
                 </a>
-                <a href="#" onclick="openModal(elements.contactModal); return false;" class="hover:text-green-600 transition-colors flex items-center gap-1" style="color: var(--text-secondary-color);">
+                <a href="#" class="hover:text-green-600 transition-colors flex items-center gap-1" style="color: var(--text-secondary-color);">
                     <i data-lucide="mail" class="w-4 h-4"></i> 문의하기
                 </a>
             </div>
@@ -148,13 +148,13 @@
             <span class="text-xl font-bold text-green-600">Menu</span>
             <button id="close-mobile-menu" class="text-3xl" style="color: var(--text-color);">&times;</button>
         </div>
-        <a href="#" onclick="openModal(elements.aboutModal); return false;" class="text-lg font-medium border-b py-4 flex items-center gap-3" style="border-color: rgba(0,0,0,0.1); color: var(--text-color);">
+        <a href="#" id="mobile-about-btn" class="text-lg font-medium border-b py-4 flex items-center gap-3" style="border-color: rgba(0,0,0,0.1); color: var(--text-color);">
             <i data-lucide="info"></i> 서비스 소개
         </a>
-        <a href="#" onclick="openModal(elements.privacyModal); return false;" class="text-lg font-medium border-b py-4 flex items-center gap-3" style="border-color: rgba(0,0,0,0.1); color: var(--text-color);">
+        <a href="#" id="mobile-privacy-btn" class="text-lg font-medium border-b py-4 flex items-center gap-3" style="border-color: rgba(0,0,0,0.1); color: var(--text-color);">
             <i data-lucide="shield-check"></i> 개인정보처리방침
         </a>
-        <a href="#" onclick="openModal(elements.contactModal); return false;" class="text-lg font-medium border-b py-4 flex items-center gap-3" style="border-color: rgba(0,0,0,0.1); color: var(--text-color);">
+        <a href="#" class="text-lg font-medium border-b py-4 flex items-center gap-3" style="border-color: rgba(0,0,0,0.1); color: var(--text-color);">
             <i data-lucide="mail"></i> 문의하기
         </a>
     </div>
@@ -683,10 +683,12 @@
         
         // --- 모달 로직 ---
         const openModal = (modal) => {
+            if (!modal) return;
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         };
         const closeModal = (modal) => {
+            if (!modal) return;
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         };
@@ -700,21 +702,38 @@
             closeModal(elements.contactModal);
         };
 
-        elements.howToUseBtn.addEventListener('click', () => openModal(elements.howToUseModal));
-        elements.aboutBtn.addEventListener('click', () => openModal(elements.aboutModal));
-        elements.privacyBtn.addEventListener('click', () => openModal(elements.privacyModal));
+        // --- 이벤트 리스너 연결 ---
+        if (elements.howToUseBtn) elements.howToUseBtn.addEventListener('click', () => openModal(elements.howToUseModal));
+        if (elements.aboutBtn) elements.aboutBtn.addEventListener('click', () => openModal(elements.aboutModal));
+        if (elements.privacyBtn) elements.privacyBtn.addEventListener('click', () => openModal(elements.privacyModal));
         
-        // 명시적으로 "문의하기" 텍스트가 포함된 모든 링크에 이벤트 바인딩
-        document.querySelectorAll('a').forEach(link => {
-            if (link.textContent.includes('문의하기')) {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    openModal(elements.contactModal);
-                });
+        // 모바일 버튼 추가 바인딩
+        const mobileAboutBtn = document.getElementById('mobile-about-btn');
+        const mobilePrivacyBtn = document.getElementById('mobile-privacy-btn');
+        if (mobileAboutBtn) mobileAboutBtn.addEventListener('click', (e) => { e.preventDefault(); openModal(elements.aboutModal); });
+        if (mobilePrivacyBtn) mobilePrivacyBtn.addEventListener('click', (e) => { e.preventDefault(); openModal(elements.privacyModal); });
+        
+        // 내비게이션 및 기타 링크들에 대한 통합 모달 처리
+        document.addEventListener('click', (e) => {
+            const target = e.target.closest('a');
+            if (!target) return;
+
+            const text = target.textContent;
+            if (text.includes('서비스 소개')) {
+                e.preventDefault();
+                openModal(elements.aboutModal);
+            } else if (text.includes('개인정보처리방침')) {
+                e.preventDefault();
+                openModal(elements.privacyModal);
+            } else if (text.includes('문의하기')) {
+                e.preventDefault();
+                openModal(elements.contactModal);
             }
         });
         
         elements.modalCloseBtns.forEach(btn => {
+            btn.addEventListener('click', closeAllModals);
+        });
             btn.addEventListener('click', closeAllModals);
         });
 
