@@ -19,6 +19,7 @@
     <meta property="og:type" content="website">
     <meta name="google-adsense-account" content="ca-pub-1671769231692668">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1671769231692668"
      crossorigin="anonymous"></script>
     <title>Habit Tracker - 어제보다 더 나은 나를 만드는 시간</title>
@@ -37,6 +38,10 @@
         .card {
             background-color: var(--card-bg-color, #ffffff);
             border: 1px solid rgba(0,0,0,0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:hover {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
         }
         .text-main {
             color: var(--text-color, #1e293b);
@@ -48,12 +53,17 @@
         }
         .progress-bar-fill {
             background: linear-gradient(90deg, #34d399, #10b981);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
         }
         .button-accent {
              background-color: var(--accent-color, #10b981);
         }
         .button-accent:hover {
             background-color: var(--accent-hover-color, #059669);
+            transform: translateY(-1px);
+        }
+        .button-accent:active {
+            transform: translateY(0);
         }
         /* 스크롤바 커스텀 */
         ::-webkit-scrollbar {
@@ -77,7 +87,7 @@
             z-index: 50;
         }
         section {
-            margin-top: 4rem; /* 섹션 간 간격 확대 */
+            margin-top: 5rem; /* 섹션 간 간격 확대 */
         }
         .confetti {
             width: 10px;
@@ -94,6 +104,16 @@
                 opacity: 0;
             }
         }
+        /* 새로운 스타일: 주간 활동 도트 */
+        .activity-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            background-color: #e2e8f0;
+        }
+        .activity-dot.active {
+            background-color: #10b981;
+        }
     </style>
 </head>
 <body class="text-main min-h-screen flex flex-col overflow-x-hidden">
@@ -102,15 +122,25 @@
     <nav class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200" style="background-color: var(--card-bg-color); border-color: rgba(0,0,0,0.1);">
         <div class="container mx-auto max-w-5xl px-4 h-16 flex items-center justify-between">
             <a href="#" class="text-xl font-bold text-green-600 flex items-center gap-2">
-                <span class="text-2xl">🌱</span> Habit Tracker
+                <i data-lucide="sprout" class="w-6 h-6"></i> Habit Tracker
             </a>
             <div class="hidden md:flex gap-8 text-sm font-medium text-secondary">
-                <a href="#tips-display" class="hover:text-green-600 transition-colors" style="color: var(--text-secondary-color);">습관 전략</a>
-                <a href="#science-display" class="hover:text-green-600 transition-colors" style="color: var(--text-secondary-color);">습관의 과학</a>
-                <a href="#books-modal" class="hover:text-green-600 transition-colors" onclick="openModal(elements.booksModal); return false;" style="color: var(--text-secondary-color);">추천 도서</a>
-                <a href="#contact-modal" class="hover:text-green-600 transition-colors" onclick="openModal(elements.contactModal); return false;" style="color: var(--text-secondary-color);">문의하기</a>
+                <a href="#tips-display" class="hover:text-green-600 transition-colors flex items-center gap-1" style="color: var(--text-secondary-color);">
+                    <i data-lucide="lightbulb" class="w-4 h-4"></i> 습관 전략
+                </a>
+                <a href="#science-display" class="hover:text-green-600 transition-colors flex items-center gap-1" style="color: var(--text-secondary-color);">
+                    <i data-lucide="brain" class="w-4 h-4"></i> 습관의 과학
+                </a>
+                <a href="#books-modal" class="hover:text-green-600 transition-colors flex items-center gap-1" onclick="openModal(elements.booksModal); return false;" style="color: var(--text-secondary-color);">
+                    <i data-lucide="book-open" class="w-4 h-4"></i> 추천 도서
+                </a>
+                <a href="#contact-modal" class="hover:text-green-600 transition-colors flex items-center gap-1" onclick="openModal(elements.contactModal); return false;" style="color: var(--text-secondary-color);">
+                    <i data-lucide="mail" class="w-4 h-4"></i> 문의하기
+                </a>
             </div>
-            <button id="mobile-menu-btn" class="md:hidden text-2xl" style="color: var(--text-color);">☰</button>
+            <button id="mobile-menu-btn" class="md:hidden text-2xl" style="color: var(--text-color);">
+                <i data-lucide="menu"></i>
+            </button>
         </div>
     </nav>
 
@@ -120,70 +150,93 @@
             <span class="text-xl font-bold text-green-600">Menu</span>
             <button id="close-mobile-menu" class="text-3xl" style="color: var(--text-color);">&times;</button>
         </div>
-        <a href="#tips-display" class="text-lg font-medium border-b py-2" style="border-color: rgba(0,0,0,0.1); color: var(--text-color);">습관 전략</a>
-        <a href="#science-display" class="text-lg font-medium border-b py-2" style="border-color: rgba(0,0,0,0.1); color: var(--text-color);">습관의 과학</a>
-        <a href="#books-modal" class="text-lg font-medium border-b py-2" onclick="openModal(elements.booksModal); return false;" style="border-color: rgba(0,0,0,0.1); color: var(--text-color);">추천 도서</a>
-        <a href="#contact-modal" class="text-lg font-medium border-b py-2" onclick="openModal(elements.contactModal); return false;" style="border-color: rgba(0,0,0,0.1); color: var(--text-color);">문의하기</a>
+        <a href="#tips-display" class="text-lg font-medium border-b py-4 flex items-center gap-3" style="border-color: rgba(0,0,0,0.1); color: var(--text-color);">
+            <i data-lucide="lightbulb"></i> 습관 전략
+        </a>
+        <a href="#science-display" class="text-lg font-medium border-b py-4 flex items-center gap-3" style="border-color: rgba(0,0,0,0.1); color: var(--text-color);">
+            <i data-lucide="brain"></i> 습관의 과학
+        </a>
+        <a href="#books-modal" class="text-lg font-medium border-b py-4 flex items-center gap-3" onclick="openModal(elements.booksModal); return false;" style="border-color: rgba(0,0,0,0.1); color: var(--text-color);">
+            <i data-lucide="book-open"></i> 추천 도서
+        </a>
+        <a href="#contact-modal" class="text-lg font-medium border-b py-4 flex items-center gap-3" onclick="openModal(elements.contactModal); return false;" style="border-color: rgba(0,0,0,0.1); color: var(--text-color);">
+            <i data-lucide="mail"></i> 문의하기
+        </a>
     </div>
 
     <div class="container mx-auto max-w-2xl p-4 md:p-6 flex-grow">
         
-        <!-- 상단 광고 영역 -->
-        <div class="mt-8 mb-12 text-center">
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-1671769231692668"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
+        <!-- 대시보드 요약 (새로운 기능) -->
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <div class="card p-4 rounded-2xl shadow-sm border-t-4 border-green-500">
+                <p class="text-xs text-secondary mb-1" style="color: var(--text-secondary-color);">진행 중인 습관</p>
+                <p id="stat-active-habits" class="text-2xl font-bold" style="color: var(--text-color);">0</p>
+            </div>
+            <div class="card p-4 rounded-2xl shadow-sm border-t-4 border-orange-500">
+                <p class="text-xs text-secondary mb-1" style="color: var(--text-secondary-color);">최고 스트릭</p>
+                <p id="stat-max-streak" class="text-2xl font-bold" style="color: var(--text-color);">0</p>
+            </div>
         </div>
 
-        <header class="text-center mb-12">
-            <h1 id="today-date" class="text-xl font-semibold text-secondary" style="color: var(--text-secondary-color);"></h1>
-            <p id="motivational-quote" class="text-2xl md:text-3xl font-bold mt-2 text-main" style="color: var(--text-color);"></p>
-        </header>
-
-        <main id="habit-app" class="card shadow-lg rounded-2xl p-6 space-y-6">
-            <div class="progress-section">
-                <div class="flex justify-between items-center mb-1">
-                    <span class="text-sm font-medium text-secondary" style="color: var(--text-secondary-color);">오늘의 달성률</span>
-                    <span id="progress-percentage" class="text-sm font-medium text-main" style="color: var(--text-color);">0%</span>
+        <main id="habit-app" class="card shadow-lg rounded-3xl p-6 md:p-8 space-y-8 relative overflow-hidden">
+            <!-- 배경 장식 요소 -->
+            <div class="absolute -top-24 -right-24 w-48 h-48 bg-green-100 rounded-full opacity-20 blur-3xl pointer-events-none"></div>
+            
+            <div class="progress-section relative z-10">
+                <div class="flex justify-between items-end mb-3">
+                    <div>
+                        <h2 class="text-sm font-bold text-secondary" style="color: var(--text-secondary-color);">DAILY GOAL</h2>
+                        <p class="text-2xl font-black text-main tracking-tight" style="color: var(--text-color);">오늘의 달성률</p>
+                    </div>
+                    <span id="progress-percentage" class="text-3xl font-black text-green-500">0%</span>
                 </div>
-                <div class="w-full progress-bar-bg rounded-full h-2.5" style="background-color: var(--progress-bg-color);">
-                    <div id="progress-bar" class="progress-bar-fill h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                <div class="w-full progress-bar-bg rounded-full h-4 overflow-hidden" style="background-color: var(--progress-bg-color);">
+                    <div id="progress-bar" class="progress-bar-fill h-full rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div>
                 </div>
             </div>
 
-            <form id="habit-form" class="flex gap-3">
-                <input type="text" id="habit-input" placeholder="새로운 습관 추가..." class="flex-grow border-2 border-transparent rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent" style="background-color: var(--input-bg-color); color: var(--text-color);">
-                <button type="submit" class="button-accent text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105">추가</button>
+            <form id="habit-form" class="flex gap-3 relative z-10">
+                <input type="text" id="habit-input" placeholder="새로운 습관 추가..." class="flex-grow border-2 border-transparent rounded-2xl py-4 px-6 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all shadow-inner" style="background-color: var(--input-bg-color); color: var(--text-color);">
+                <button type="submit" class="button-accent text-white font-bold py-4 px-8 rounded-2xl transition-all shadow-lg flex items-center gap-2">
+                    <i data-lucide="plus" class="w-5 h-5"></i> <span class="hidden md:inline">추가</span>
+                </button>
             </form>
 
-        <div id="habit-list-container" class="space-y-3">
-            <ul id="habit-list" class="space-y-3"></ul>
-        </div>
+            <div id="habit-list-container" class="space-y-4 relative z-10">
+                <ul id="habit-list" class="space-y-4"></ul>
+            </div>
         </main>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <div class="card shadow-lg rounded-2xl p-4">
-                <h3 class="font-bold text-center mb-3 text-main" style="color: var(--text-color);">테마 색상 변경</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+            <div class="card shadow-lg rounded-3xl p-6">
+                <div class="flex items-center gap-2 mb-4">
+                    <i data-lucide="palette" class="w-5 h-5 text-green-500"></i>
+                    <h3 class="font-bold text-main" style="color: var(--text-color);">테마 색상</h3>
+                </div>
                 <div id="theme-switcher" class="flex flex-wrap justify-center gap-3">
-                    <button data-color="#f0f2f5" class="w-8 h-8 rounded-full bg-[#f0f2f5] border-2 border-gray-300" title="기본"></button>
-                    <button data-color="#1f2937" class="w-8 h-8 rounded-full bg-[#1f2937] border-2" title="다크"></button>
-                    <button data-color="#fefce8" class="w-8 h-8 rounded-full bg-[#fefce8] border-2" title="크림"></button>
-                    <button data-color="#e0e7ff" class="w-8 h-8 rounded-full bg-[#e0e7ff] border-2" title="인디고"></button>
-                    <button data-color="#d1fae5" class="w-8 h-8 rounded-full bg-[#d1fae5] border-2" title="에메랄드"></button>
-                    <button data-color="#ffedd5" class="w-8 h-8 rounded-full bg-[#ffedd5] border-2" title="피치"></button>
-                    <button data-color="#fce7f3" class="w-8 h-8 rounded-full bg-[#fce7f3] border-2" title="로즈"></button>
-                    <button data-color="#ecfeff" class="w-8 h-8 rounded-full bg-[#ecfeff] border-2" title="시안"></button>
+                    <button data-color="#f8fafc" class="w-10 h-10 rounded-full bg-[#f8fafc] border-2 border-gray-200 transition-transform hover:scale-110" title="Slate"></button>
+                    <button data-color="#1f2937" class="w-10 h-10 rounded-full bg-[#1f2937] border-2 transition-transform hover:scale-110" title="Dark"></button>
+                    <button data-color="#fefce8" class="w-10 h-10 rounded-full bg-[#fefce8] border-2 transition-transform hover:scale-110" title="Cream"></button>
+                    <button data-color="#e0e7ff" class="w-10 h-10 rounded-full bg-[#e0e7ff] border-2 transition-transform hover:scale-110" title="Indigo"></button>
+                    <button data-color="#d1fae5" class="w-10 h-10 rounded-full bg-[#d1fae5] border-2 transition-transform hover:scale-110" title="Emerald"></button>
+                    <button data-color="#ffedd5" class="w-10 h-10 rounded-full bg-[#ffedd5] border-2 transition-transform hover:scale-110" title="Peach"></button>
+                    <button data-color="#fce7f3" class="w-10 h-10 rounded-full bg-[#fce7f3] border-2 transition-transform hover:scale-110" title="Rose"></button>
+                    <button data-color="#ecfeff" class="w-10 h-10 rounded-full bg-[#ecfeff] border-2 transition-transform hover:scale-110" title="Cyan"></button>
                 </div>
             </div>
-            <div class="card shadow-lg rounded-2xl p-4 flex flex-col items-center justify-center space-y-3">
-                 <button id="how-to-use-btn" class="button-accent text-white font-bold py-3 px-6 rounded-lg w-full">💡 사용 방법 보기</button>
-                 <button id="about-btn" class="button-accent text-white font-bold py-3 px-6 rounded-lg w-full">ℹ️ 서비스 소개</button>
-                 <button id="privacy-btn" class="button-accent text-white font-bold py-3 px-6 rounded-lg w-full">🔒 개인정보처리방침</button>
+            <div class="card shadow-lg rounded-3xl p-6 flex flex-col gap-3">
+                 <button id="how-to-use-btn" class="button-accent text-white font-bold py-3 px-6 rounded-xl w-full flex items-center justify-center gap-2">
+                    <i data-lucide="help-circle" class="w-5 h-5"></i> 사용 방법
+                 </button>
+                 <div class="grid grid-cols-2 gap-3">
+                    <button id="export-btn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors" style="background-color: var(--input-bg-color); color: var(--text-color);">
+                        <i data-lucide="download" class="w-4 h-4"></i> 백업
+                    </button>
+                    <button id="import-btn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors" style="background-color: var(--input-bg-color); color: var(--text-color);">
+                        <i data-lucide="upload" class="w-4 h-4"></i> 복구
+                    </button>
+                 </div>
+                 <input type="file" id="import-file" class="hidden" accept=".json">
             </div>
         </div>
 
@@ -494,32 +547,44 @@
             const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
             elements.progressBar.style.width = `${percentage}%`;
             elements.progressText.textContent = `${percentage}%`;
+            
+            // 대시보드 통계 업데이트
+            document.getElementById('stat-active-habits').textContent = total;
+            const maxStreak = total > 0 ? Math.max(...state.habits.map(h => h.streak)) : 0;
+            document.getElementById('stat-max-streak').textContent = maxStreak;
         };
         
         const renderHabits = () => {
             elements.habitList.innerHTML = '';
             if (state.habits.length === 0) {
-                elements.habitList.innerHTML = `<p class="text-center py-10 text-secondary">아직 등록된 습관이 없습니다.<br>오늘의 첫 번째 습관을 추가해보세요! 🌱</p>`;
+                elements.habitList.innerHTML = `
+                    <div class="text-center py-12 px-4 border-2 border-dashed border-gray-200 rounded-3xl" style="border-color: rgba(0,0,0,0.1);">
+                        <i data-lucide="sparkles" class="w-12 h-12 text-green-300 mx-auto mb-4"></i>
+                        <p class="text-secondary font-medium" style="color: var(--text-secondary-color);">아직 등록된 습관이 없습니다.<br>오늘의 첫 번째 습관을 추가해보세요!</p>
+                    </div>
+                `;
             } else {
                 state.habits.forEach((habit, index) => {
                     const isCompleted = habit.completed;
                     const li = document.createElement('li');
-                    li.className = `habit-item group flex items-center p-4 rounded-xl transition-all duration-200 cursor-pointer ${isCompleted ? 'bg-green-50' : 'card hover:shadow-md hover:border-green-200'}`;
+                    li.className = `habit-item group flex items-center p-5 rounded-2xl transition-all duration-300 cursor-pointer border ${isCompleted ? 'bg-green-50/50 border-green-100 shadow-sm' : 'card border-transparent shadow-sm'}`;
                     li.innerHTML = `
                         <div class="flex-grow flex items-center gap-4">
                             <div class="relative flex items-center justify-center">
-                                <input type="checkbox" id="checkbox-${index}" ${isCompleted ? 'checked' : ''} class="peer w-6 h-6 rounded-full border-2 border-gray-300 text-green-500 focus:ring-0 cursor-pointer transition-all">
+                                <input type="checkbox" id="checkbox-${index}" ${isCompleted ? 'checked' : ''} class="peer w-7 h-7 rounded-full border-2 border-gray-300 text-green-500 focus:ring-0 cursor-pointer transition-all">
                                 <div class="absolute pointer-events-none text-white opacity-0 peer-checked:opacity-100 transition-opacity">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                    </svg>
+                                    <i data-lucide="check" class="w-4 h-4"></i>
                                 </div>
                             </div>
-                            <span class="flex-grow font-medium ${isCompleted ? 'line-through text-slate-400' : 'text-slate-700'}">${habit.name}</span>
+                            <span class="flex-grow font-semibold text-lg ${isCompleted ? 'line-through text-slate-400' : 'text-slate-700'}" style="${isCompleted ? '' : 'color: var(--text-color);'}">${habit.name}</span>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="streak-text font-bold text-sm px-2 py-1 bg-orange-50 text-orange-500 rounded-full ${habit.streak > 0 ? 'opacity-100' : 'opacity-0'}">🔥 ${habit.streak}</span>
-                            <button class="delete-btn opacity-0 group-hover:opacity-100 p-2 text-slate-300 hover:text-red-500 transition-all">&times;</button>
+                        <div class="flex items-center gap-3">
+                            <span class="streak-text font-black text-sm px-3 py-1 bg-orange-100 text-orange-600 rounded-full flex items-center gap-1 ${habit.streak > 0 ? 'opacity-100' : 'opacity-0'}">
+                                <i data-lucide="flame" class="w-3 h-3"></i> ${habit.streak}
+                            </span>
+                            <button class="delete-btn opacity-0 group-hover:opacity-100 p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
+                                <i data-lucide="trash-2" class="w-5 h-5"></i>
+                            </button>
                         </div>
                     `;
                     
@@ -531,146 +596,53 @@
 
                     li.querySelector('.delete-btn').addEventListener('click', (e) => {
                         e.stopPropagation();
-                        deleteHabit(index);
+                        if(confirm('이 습관을 삭제할까요?')) deleteHabit(index);
                     });
                     elements.habitList.appendChild(li);
                 });
             }
+            lucide.createIcons();
             updateProgressBar();
         };
 
-        // --- 스크롤 제어 ---
-        const backToTopBtn = document.getElementById('back-to-top');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                backToTopBtn.style.display = 'block';
-            } else {
-                backToTopBtn.style.display = 'none';
-            }
-        });
-        backToTopBtn.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-
-        function displayHeaderInfo() {
-            const today = new Date();
-            elements.date.textContent = today.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
-            elements.quote.textContent = quotes[Math.floor(Math.random() * quotes.length)];
-        }
-        
-        // --- 모달 로직 ---
-        const openModal = (modal) => {
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        };
-        const closeModal = (modal) => {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        };
-
-        const closeAllModals = () => {
-            closeModal(elements.howToUseModal);
-            closeModal(elements.celebrationModal);
-            closeModal(elements.aboutModal);
-            closeModal(elements.privacyModal);
-            closeModal(elements.booksModal);
-            closeModal(elements.contactModal);
-        };
-
-        // --- 모달 이벤트 연결 ---
-        const setupModalLink = (selector, modal) => {
-            document.querySelectorAll(selector).forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    openModal(modal);
-                });
-            });
-        };
-
-        setupModalLink('a[onclick*="booksModal"]', elements.booksModal);
-        setupModalLink('a[onclick*="contactModal"]', elements.contactModal);
-        
-        // --- 축하 로직 ---
-        function runConfetti() {
-            for (let i = 0; i < 50; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.animationDelay = Math.random() * 2 + 's';
-                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
-                document.body.appendChild(confetti);
-                setTimeout(() => confetti.remove(), 5000);
-            }
-        }
-        
-        function showCelebration(habit) {
-            elements.celebrationText.textContent = `'${habit.name}' 습관을 ${habit.streak}일 연속으로 달성하셨어요!`;
-            openModal(elements.celebrationModal);
-            runConfetti();
-        }
-
-        // --- 핵심 로직 ---
-        const addHabit = (name) => {
-            if (name.trim() === '') return;
-            state.habits.push({ name: name.trim(), completed: false, streak: 0, lastCompletedDate: null });
-            saveState();
-            renderHabits();
-        };
-
-        const toggleHabit = (index) => {
-            const habit = state.habits[index];
-            const today = getISODateString(new Date());
-            const yesterday = getISODateString(new Date(Date.now() - 86400000));
-            habit.completed = !habit.completed;
-
-            if (habit.completed) {
-                const previousStreak = habit.streak;
-                habit.streak = habit.lastCompletedDate === yesterday ? habit.streak + 1 : 1;
-                habit.lastCompletedDate = today;
-
-                // 축하 이벤트 체크
-                if (MILESTONES.includes(habit.streak) && habit.streak > previousStreak) {
-                    showCelebration(habit);
-                }
-            } else {
-                if (habit.lastCompletedDate === today) {
-                    habit.streak = Math.max(0, habit.streak - 1);
-                    habit.lastCompletedDate = habit.streak > 0 ? yesterday : null;
-                }
-            }
-            saveState();
-            renderHabits();
-        };
-
-        const deleteHabit = (index) => {
-            state.habits.splice(index, 1);
-            saveState();
-            renderHabits();
-        };
-
-        const initializeState = () => {
-            const loaded = loadState();
-            const today = getISODateString(new Date());
-            const yesterday = getISODateString(new Date(Date.now() - 86400000));
+        // --- 백업 및 복구 로직 ---
+        const exportData = () => {
+            const dataStr = JSON.stringify(state);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const exportFileDefaultName = `habit-tracker-backup-${getISODateString(new Date())}.json`;
             
-            if (loaded) {
-                state = loaded;
-                if (state.lastVisitDate !== today) {
-                    state.habits.forEach(habit => {
-                        if (habit.completed && habit.lastCompletedDate !== today) {
-                             // 이전 방문 시 체크된 항목 처리
-                        } else if (!habit.completed && habit.lastCompletedDate !== yesterday) {
-                            habit.streak = 0;
-                        }
-                        habit.completed = false;
-                    });
-                    state.lastVisitDate = today;
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        };
+
+        const importData = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedState = JSON.parse(e.target.result);
+                    if (importedState.habits) {
+                        state = importedState;
+                        saveState();
+                        renderHabits();
+                        alert('데이터가 성공적으로 복구되었습니다.');
+                    }
+                } catch (err) {
+                    alert('올바르지 않은 파일 형식입니다.');
                 }
-            }
-            saveState();
+            };
+            reader.readAsText(file);
         };
 
         // --- 이벤트 리스너 ---
+        document.getElementById('export-btn').addEventListener('click', exportData);
+        document.getElementById('import-btn').addEventListener('click', () => document.getElementById('import-file').click());
+        document.getElementById('import-file').addEventListener('change', importData);
+
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         const closeMobileMenuBtn = document.getElementById('close-mobile-menu');
@@ -714,6 +686,12 @@
         elements.modalCloseBtns.forEach(btn => {
             btn.addEventListener('click', closeAllModals);
         });
+
+        function displayHeaderInfo() {
+            const today = new Date();
+            elements.date.textContent = today.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+            elements.quote.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+        }
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -760,11 +738,12 @@
             if (savedTheme) {
                 applyTheme(savedTheme);
             } else {
-                applyTheme('#f0f2f5'); // 기본 테마
+                applyTheme('#f8fafc'); // 기본 테마
             }
             displayHeaderInfo();
             initializeState();
             renderHabits();
+            lucide.createIcons();
         }
 
         init();
