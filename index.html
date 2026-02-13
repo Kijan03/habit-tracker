@@ -250,14 +250,37 @@
     </div>
 
     <div id="contact-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center p-4 z-50">
-        <div class="card rounded-2xl shadow-xl max-w-lg w-full p-8 relative text-center">
+        <div class="card rounded-2xl shadow-xl max-w-lg w-full p-8 relative overflow-y-auto max-h-[90vh]">
             <button class="modal-close-btn absolute top-4 right-4 text-2xl font-bold text-secondary hover:text-main">&times;</button>
-            <h2 class="text-2xl font-bold mb-4 text-main">Contact & Feedback</h2>
-            <p class="text-secondary mb-6">사용 중 불편한 점이나 제안하고 싶은 기능이 있다면 언제든 알려주세요.</p>
-            <div class="bg-gray-50 p-6 rounded-xl">
-                <p class="text-sm text-secondary mb-2">공식 문의 이메일</p>
-                <a href="mailto:kijan03@gmail.com" class="text-xl font-bold text-green-600 hover:underline">kijan03@gmail.com</a>
-            </div>
+            <h2 class="text-2xl font-bold mb-2 text-main text-center">의견 보내기</h2>
+            <p class="text-secondary text-sm mb-6 text-center">서비스 개선을 위한 아이디어나 버그 제보를 환영합니다!</p>
+            
+            <form action="https://formspree.io/f/xjgeyeqq" method="POST" class="space-y-4 text-left">
+                <div>
+                    <label class="block text-sm font-medium mb-1" style="color: var(--text-color);">성함 (선택)</label>
+                    <input type="text" name="name" placeholder="홍길동" class="w-full border-2 border-transparent rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-400" style="background-color: var(--input-bg-color); color: var(--text-color);">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1" style="color: var(--text-color);">이메일 주소</label>
+                    <input type="email" name="email" required placeholder="example@email.com" class="w-full border-2 border-transparent rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-400" style="background-color: var(--input-bg-color); color: var(--text-color);">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1" style="color: var(--text-color);">피드백 유형</label>
+                    <select name="type" class="w-full border-2 border-transparent rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-400" style="background-color: var(--input-bg-color); color: var(--text-color);">
+                        <option value="bug">버그 제보</option>
+                        <option value="improvement">기능 개선 제안</option>
+                        <option value="other">기타 문의</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1" style="color: var(--text-color);">상세 내용</label>
+                    <textarea name="message" required rows="4" placeholder="내용을 입력해주세요..." class="w-full border-2 border-transparent rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-400" style="background-color: var(--input-bg-color); color: var(--text-color);"></textarea>
+                </div>
+                <button type="submit" class="button-accent text-white font-bold py-3 px-6 rounded-lg w-full transition-transform transform hover:scale-[1.02]">
+                    의견 전송하기
+                </button>
+                <p class="text-[10px] text-gray-400 text-center mt-4">직접 문의: kijan03@gmail.com</p>
+            </form>
         </div>
     </div>
     </div>
